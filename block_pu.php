@@ -113,9 +113,14 @@ class block_pu extends block_list {
         $coursecontext = context_course::instance($this->course->id);
         $systemcontext = context_system::instance();
 
-        // Course-level Features (compose).
+        // Course-level Features.
         $this->add_item_to_content([
             'lang_key' => get_string('pu_block_intro', 'block_pu')
+        ]);
+
+        $this->add_item_to_content([
+            'lang_key' => get_string('pu_docs_intro', 'block_pu'),
+            'attributes' => array('class' => 'intro')
         ]);
 
         /*
@@ -157,9 +162,9 @@ class block_pu extends block_list {
 
         $label = $params['lang_key'];
 
-        if (isset($params['icon_key'])) {
-            $icon = $OUTPUT->pix_icon($params['icon_key'], $label, 'moodle', ['class' => 'icon']);
-        }
+        $icon = isset($params['icon_key']) ? $icon = $OUTPUT->pix_icon($params['icon_key'], $label, 'moodle', ['class' => 'icon']) : null;
+
+        $attrs = isset($params['attributes']) ? $params['attributes'] : null;
 
         if (isset($params['page'])) {
             return html_writer::link(
@@ -169,7 +174,8 @@ class block_pu extends block_list {
 	} else {
              return html_writer::tag(
                 'span',
-                $label
+                $icon . $label,
+                $attrs
             );
         }
     }
