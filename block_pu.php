@@ -156,12 +156,22 @@ class block_pu extends block_list {
         global $OUTPUT;
 
         $label = $params['lang_key'];
-        $icon = $OUTPUT->pix_icon($params['icon_key'], $label, 'moodle', ['class' => 'icon']);
 
-        return html_writer::link(
-            new moodle_url('/blocks/pu/' . $params['page'] . '.php', $params['query_string']),
-            $icon . $label
-        );
+        if (isset($params['icon_key'])) {
+            $icon = $OUTPUT->pix_icon($params['icon_key'], $label, 'moodle', ['class' => 'icon']);
+        }
+
+        if (isset($params['page'])) {
+            return html_writer::link(
+                new moodle_url('/blocks/pu/' . $params['page'] . '.php', $params['query_string']),
+                $icon . $label
+            );
+	} else {
+             return html_writer::tag(
+                'span',
+                $label
+            );
+        }
     }
 
     /**
