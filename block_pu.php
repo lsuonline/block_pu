@@ -34,7 +34,6 @@ class block_pu extends block_list {
         $this->title = get_string('pluginname', 'block_pu');
         $this->set_course();
         $this->set_user();
-        $this->set_system_context();
         $this->set_course_context();
     }
 
@@ -56,15 +55,6 @@ class block_pu extends block_list {
     public function set_user() {
         global $USER;
         $this->user = $USER;
-    }
-
-    /**
-     * Returns the system context
-     *
-     * @return context
-     */
-    private function set_system_context() {
-        $this->system_context = context_system::instance();
     }
 
     /**
@@ -111,16 +101,42 @@ class block_pu extends block_list {
         $this->content = $this->get_new_content_container();
 
         $coursecontext = context_course::instance($this->course->id);
-        $systemcontext = context_system::instance();
 
         // Course-level Features.
         $this->add_item_to_content([
-            'lang_key' => get_string('pu_block_intro', 'block_pu')
+            'lang_key' => get_string('pu_block_intro', 'block_pu', ['numused' => $this->usedcount(), 'coursename' => $this->course->fullname])
         ]);
+
+        foreach ($this->mapped_codes() AS $mappedcode) {
+            if ($mappedcode->valid == 1 && $mappedcode->used == 0) {
+                $this->add_item_to_content([
+                    'lang_key' => $mappedcode->couponcode
+                ]);
+            } else if ($mappedcode->valid == 1 && $mappedcode->used == 1) {
+                $this->add_item_to_content([
+                    'lang_key' => '<strong>' . $mappedcode->couponcode . '</strong>'
+                ]);
+            }
+        }
 
         $this->add_item_to_content([
             'lang_key' => get_string('pu_docs_intro', 'block_pu'),
             'attributes' => array('class' => 'intro')
+        ]);
+
+        $this->add_item_to_content([
+            'lang_key' => get_string('pu_docs_used', 'block_pu'),
+            'attributes' => array('class' => 'litem')
+        ]);
+
+        $this->add_item_to_content([
+            'lang_key' => get_string('pu_docs_usednum', 'block_pu', ['numused' => $this->usedcount(), 'numtotal' => $this->codetotals()]),
+            'attributes' => array('class' => 'litem')
+        ]);
+
+        $this->add_item_to_content([
+            'lang_key' => get_string('pu_docs_invalid', 'block_pu'),
+	    'attributes' => array('class' => 'litem')
         ]);
 
         /*
@@ -136,6 +152,95 @@ class block_pu extends block_list {
     }
 
     /**
+     * Checks to see if a user is a GUILD user in the given course context
+     *
+     * @param  array $params  [user_id, course_id]
+     * @return bool
+     */
+    private function guilduser($params) {
+        global $DB;
+        if ($DB->get_record('block_pu_guildmaps', array('course' => $params['course_id'], 'user' => $params['user_id']))) {
+            return true;
+        } else {
+           return false;
+        }
+    }
+
+    private function codetotals() {
+        global $CFG;
+
+        return $CFG->block_pu_defaultcodes;
+    }
+
+
+    /**
+     * Retreives the code mappings for a user/course .
+     *
+     * @return array of objects containing
+                      [ pcmid,
+                        coursefullname,
+                        userfirstname,
+                        userlastname,
+                        username,
+                        LSUID,
+                        useremail,
+                        couponcode,
+                        used,
+                        valid ]
+     */
+    private function mapped_codes() {
+        // Needed to invoke the DB.
+        global $DB;
+
+        // Set up the course id for later.
+        $cid = $this->course->id;
+
+        // Set up the user id for later.
+        $uid = $this->user->id;
+
+        // The SQL.
+        $mappedsql = "SELECT pcm.id AS pcmid,
+               c.fullname AS coursefullname,
+               u.firstname AS userfirstname,
+               u.lastname AS userlastname,
+               u.username AS username,
+               u.idnumber AS LSUID,
+               u.email AS useremail,
+               pc.couponcode AS couponcode,
+               pc.used AS used,
+               pc.valid AS valid
+        FROM mdl_block_pu_guildmaps pgm
+            INNER JOIN mdl_course c ON c.id = pgm.course
+            INNER JOIN mdl_user u ON u.id = pgm.user
+            INNER JOIN mdl_block_pu_codemaps pcm ON pcm.guild = pgm.id
+            INNER JOIN mdl_block_pu_codes pc ON pcm.code = pc.id
+        WHERE u.deleted = 0
+            AND pgm.current = 1
+            AND c.id = $cid
+            AND u.id = $uid";
+
+        // Build the array(s).
+        $mapped = $DB->get_records_sql($mappedsql);
+
+        // Return the data.
+        return $mapped;
+    }
+
+    /**
+     * Counts the number of coupon codes assigned to a person in a course context.
+     *
+     * @param  array $params  [user_id, course_id]
+     * @return int
+     */
+    private function usedcount() {
+        global $DB;
+
+        // TODO Implement caching so we only call this once in a while.
+        $count = count($this->mapped_codes());
+        return $count;
+    }
+
+    /**
      * Builds and adds an item to the content container for the given params
      *
      * @param  array $params  [lang_key, icon_key, page, query_string]
@@ -148,7 +253,9 @@ class block_pu extends block_list {
 
         $item = $this->build_item($params);
 
-        $this->content->items[] = $item;
+        if ($this->guilduser($params = array('course_id' => $this->course->id, 'user_id' => $this->user->id))) {
+            $this->content->items[] = $item;
+        }
     }
 
     /**
@@ -166,18 +273,22 @@ class block_pu extends block_list {
 
         $attrs = isset($params['attributes']) ? $params['attributes'] : null;
 
+        $tag = 'span';
+
         if (isset($params['page'])) {
-            return html_writer::link(
-                new moodle_url('/blocks/pu/' . $params['page'] . '.php', $params['query_string']),
-                $icon . $label
-            );
-	} else {
-             return html_writer::tag(
-                'span',
-                $icon . $label,
-                $attrs
+            $item = html_writer::link(
+                        new moodle_url('/blocks/pu/' . $params['page'] . '.php', $params['query_string']),
+                        $icon . $label
             );
         }
+
+        $item = html_writer::tag(
+                    $tag,
+                    $icon . $label,
+                    $attrs
+                );
+
+         return $item;
     }
 
     /**

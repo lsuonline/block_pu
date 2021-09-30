@@ -1,0 +1,21 @@
+.block_pu span {
+  display: inline-block;
+  font-size: 0.75em;
+  margin-bottom: .75em;  
+}
+
+.block_pu span:first-of-type {
+  margin-bottom: .25em;
+}
+
+.block_pu span.intro {
+  font-weight: 700;
+  font-size: 1em;
+}
+
+.block_pu span.litem {
+  display: list-item;
+  list-style-type: disc;
+  margin-left: 1em;
+}
+

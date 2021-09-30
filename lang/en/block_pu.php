@@ -48,8 +48,8 @@ $string['override_numinvalid'] = '# of replacement codes';
 $string['override_numinvalid_help'] = 'Override the default number of replacement codes for this course. By default this is capped at the number of exams in this course.';
 
 // Block strings
-$string['pu_block_intro'] = 'Your {$a->ordinal} coupon code for {$a->coursename} is:';
+$string['pu_block_intro'] = 'Your {$a->numused} coupon code(s) for <strong>{$a->coursename}</strong>';
 $string['pu_docs_intro'] = 'What you need to know about PU codes:';
-$string['pu_docs_used'] = 'If you have used this code and need another for your next exam, please click the check icon next to the code.';
-$string['pu_docs_usednum'] = 'You have used {$a->numused} of the {$a->numtotal} allowed coupon codes for this course.';
-$string['pu_docs_invalid'] = 'If this code does not work, request a replacement code by clicking on the X button next to the code.';
+$string['pu_docs_usednum'] = 'You have used {$a->numused} of the {$a->numtotal} coupon codes for this course';
+$string['pu_docs_used'] = 'If you have used this code and need another for your next exam, please click the "request new code" button below';
+$string['pu_docs_invalid'] = 'If this code does not work, request a replacement code by clicking on the "request replacement code" button below';
