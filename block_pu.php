@@ -23,6 +23,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+// Inlcude the requisite helpers functionality.
+require_once('classes/helpers.php');
+
 class block_pu extends block_list {
 
     public $course;
@@ -107,14 +110,26 @@ class block_pu extends block_list {
             'lang_key' => get_string('pu_block_intro', 'block_pu', ['numused' => $this->usedcount(), 'coursename' => $this->course->fullname])
         ]);
 
+        $countpast = 0;
+        $countcurrent = 0;
+
         foreach ($this->mapped_codes() AS $mappedcode) {
             if ($mappedcode->valid == 1 && $mappedcode->used == 0) {
+                $countcurrent++;
                 $this->add_item_to_content([
-                    'lang_key' => $mappedcode->couponcode
+                    'lang_key' => $mappedcode->couponcode,
+                    'pcmid' => $mappedcode->pcmid,
+                    'attributes' => array('class' => 'pu_active')
                 ]);
-            } else if ($mappedcode->valid == 1 && $mappedcode->used == 1) {
+            }
+        }
+
+        foreach ($this->mapped_codes() AS $mappedcode) {
+            if ($mappedcode->valid == 1 && $mappedcode->used == 1 && $countcurrent > 0) {
+                $countpast++;
                 $this->add_item_to_content([
-                    'lang_key' => '<strong>' . $mappedcode->couponcode . '</strong>'
+                    'lang_key' => get_string('pu_past', 'block_pu') . $countpast . ': ' . $mappedcode->couponcode,
+                    'attributes' => array('class' => 'pu_past')
                 ]);
             }
         }
@@ -129,6 +144,15 @@ class block_pu extends block_list {
             'attributes' => array('class' => 'litem')
         ]);
 
+        if (isset($mappedcode->pcmid)) {
+            $this->add_item_to_content([
+                'lang_key' => get_string('pu_used', 'block_pu'),
+                'page' => 'used',
+                'query_string' => ['courseid' => $this->course->id, 'pcmid' => $mappedcode->pcmid],
+                'attributes' => array('class' => 'btn btn-outline-secondary btn-sm pu_used')
+            ]);
+        }
+
         $this->add_item_to_content([
             'lang_key' => get_string('pu_docs_usednum', 'block_pu', ['numused' => $this->usedcount(), 'numtotal' => $this->codetotals()]),
             'attributes' => array('class' => 'litem')
@@ -139,14 +163,14 @@ class block_pu extends block_list {
 	    'attributes' => array('class' => 'litem')
         ]);
 
-        /*
-        $this->add_item_to_content([
-            'lang_key' => get_string('pu_block_intro', 'block_pu'),
-            'icon_key' => 't/email',
-            'page' => 'compose'
-            'query_string' => ['courseid' => $this->course->id, 'userid' => $this->user->id]
-        ]);
-        */
+        if (isset($mappedcode->pcmid)) {
+            $this->add_item_to_content([
+                'lang_key' => get_string('pu_replace', 'block_pu'),
+                'page' => 'replace',
+                'query_string' => ['courseid' => $this->course->id, 'pcmid' => $mappedcode->pcmid],
+                'attributes' => array('class' => 'btn btn-outline-secondary btn-sm pu_retry')
+            ]);
+        }
 
         return $this->content;
     }
@@ -158,12 +182,8 @@ class block_pu extends block_list {
      * @return bool
      */
     private function guilduser($params) {
-        global $DB;
-        if ($DB->get_record('block_pu_guildmaps', array('course' => $params['course_id'], 'user' => $params['user_id']))) {
-            return true;
-        } else {
-           return false;
-        }
+        require_once('classes/helpers.php');
+        block_pu_helpers::guilduser_check($params);
     }
 
     private function codetotals() {
@@ -174,7 +194,7 @@ class block_pu extends block_list {
 
 
     /**
-     * Retreives the code mappings for a user/course .
+     * Retreives the code mappings for a user/course from a helper function.
      *
      * @return array of objects containing
                       [ pcmid,
@@ -189,38 +209,14 @@ class block_pu extends block_list {
                         valid ]
      */
     private function mapped_codes() {
-        // Needed to invoke the DB.
-        global $DB;
-
         // Set up the course id for later.
         $cid = $this->course->id;
 
         // Set up the user id for later.
         $uid = $this->user->id;
 
-        // The SQL.
-        $mappedsql = "SELECT pcm.id AS pcmid,
-               c.fullname AS coursefullname,
-               u.firstname AS userfirstname,
-               u.lastname AS userlastname,
-               u.username AS username,
-               u.idnumber AS LSUID,
-               u.email AS useremail,
-               pc.couponcode AS couponcode,
-               pc.used AS used,
-               pc.valid AS valid
-        FROM mdl_block_pu_guildmaps pgm
-            INNER JOIN mdl_course c ON c.id = pgm.course
-            INNER JOIN mdl_user u ON u.id = pgm.user
-            INNER JOIN mdl_block_pu_codemaps pcm ON pcm.guild = pgm.id
-            INNER JOIN mdl_block_pu_codes pc ON pcm.code = pc.id
-        WHERE u.deleted = 0
-            AND pgm.current = 1
-            AND c.id = $cid
-            AND u.id = $uid";
-
         // Build the array(s).
-        $mapped = $DB->get_records_sql($mappedsql);
+        $mapped = block_pu_helpers::codemappings(array('course_id' => $cid, 'user_id' => $uid, 'pcmid' => null));
 
         // Return the data.
         return $mapped;
@@ -247,13 +243,15 @@ class block_pu extends block_list {
      * @return void
      */
     private function add_item_to_content($params) {
+       require_once('classes/helpers.php');
+
         if (!array_key_exists('query_string', $params)) {
             $params['query_string'] = [];
         }
 
         $item = $this->build_item($params);
 
-        if ($this->guilduser($params = array('course_id' => $this->course->id, 'user_id' => $this->user->id))) {
+        if (block_pu_helpers::guilduser_check($params = array('course_id' => $this->course->id, 'user_id' => $this->user->id))) {
             $this->content->items[] = $item;
         }
     }
@@ -267,27 +265,35 @@ class block_pu extends block_list {
     private function build_item($params) {
         global $OUTPUT;
 
+        // Set the label from the params.
         $label = $params['lang_key'];
 
+        // Set the icon if we use one (which we don't but JIC), if not, blank.
         $icon = isset($params['icon_key']) ? $icon = $OUTPUT->pix_icon($params['icon_key'], $label, 'moodle', ['class' => 'icon']) : null;
 
+        // If we're using any attrributes, populate them.
         $attrs = isset($params['attributes']) ? $params['attributes'] : null;
 
+        // We're using spans here.
         $tag = 'span';
 
+        // If this item is a link to a specific page.
         if (isset($params['page'])) {
+            // Build the item.
             $item = html_writer::link(
                         new moodle_url('/blocks/pu/' . $params['page'] . '.php', $params['query_string']),
-                        $icon . $label
+                        $icon . $label, $attrs
             );
-        }
-
-        $item = html_writer::tag(
+        } else {
+            // Build the item.
+            $item = html_writer::tag(
                     $tag,
                     $icon . $label,
                     $attrs
                 );
+         }
 
+         // return the item.
          return $item;
     }
 

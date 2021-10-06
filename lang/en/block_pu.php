@@ -47,9 +47,21 @@ $string['override_numcodes_help'] = 'Override the default number of coupon codes
 $string['override_numinvalid'] = '# of replacement codes';
 $string['override_numinvalid_help'] = 'Override the default number of replacement codes for this course. By default this is capped at the number of exams in this course.';
 
-// Block strings
+// Block strings.
 $string['pu_block_intro'] = 'Your {$a->numused} coupon code(s) for <strong>{$a->coursename}</strong>';
 $string['pu_docs_intro'] = 'What you need to know about PU codes:';
 $string['pu_docs_usednum'] = 'You have used {$a->numused} of the {$a->numtotal} coupon codes for this course';
-$string['pu_docs_used'] = 'If you have used this code and need another for your next exam, please click the "request new code" button below';
-$string['pu_docs_invalid'] = 'If this code does not work, request a replacement code by clicking on the "request replacement code" button below';
+$string['pu_docs_used'] = 'If you have used the top (latest) code and need another for your next exam, please click the "<strong>mark used</strong>" button below:';
+$string['pu_docs_invalid'] = 'If the top (latest) code does not work, request a replacement code by clicking on the "<strong>request replacement</strong>" button below:';
+$string['pu_used'] = 'Mark used';
+$string['pu_past'] = 'Used code ';
+
+// Interstitial strings.
+$string['pu_yousure'] = 'Are you sure you want to request a replacement ProctorU coupon code?';
+$string['pu_replace'] = 'Request replacement';
+$string['pu_try_again'] = 'Retry latest code';
+
+
+// Error strings.
+$string['nopermissions'] = 'You do not have permission to modify coupon codes.';
+$string['nopermission'] = 'You do not have permission to modify the requested coupon code.<br><br>Please contact an administrator if you believe you should be able to modify that specific code.';
