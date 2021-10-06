@@ -50,7 +50,7 @@ class block_pu_helpers {
     }
 
     /**
-     * Retreives the code mappings for a user/course .
+     * Retreives the code mappings for a user/course and a given coupon code mapping.
      *
      * @return array of objects containing
                       [ pcmid,
@@ -105,4 +105,42 @@ class block_pu_helpers {
         return $mapped;
     }
 
+    /**
+     * Marks a given code as used or invalif.
+     *
+     * @return bool
+     */
+    public static function pu_mark($params) {
+        // Needed to invoke the DB.
+        global $DB;
+
+        // Set up these for later.
+        $cid   = $params['course_id'];
+        $uid   = $params['user_id'];
+        $pcmid = $params['pcmid'];
+        $func  = $params['function'];
+
+        // Build the setter.
+        $setval = $func == 'used' ? 1 : 0;
+        $setter = $func == 'used' ? "SET pc.used=$setval" : "SET pc.valid=$setval";
+
+        // The SQL.
+        $usedsql = "UPDATE mdl_block_pu_guildmaps pgm
+            INNER JOIN mdl_course c ON c.id = pgm.course
+            INNER JOIN mdl_user u ON u.id = pgm.user
+            INNER JOIN mdl_block_pu_codemaps pcm ON pcm.guild = pgm.id
+            INNER JOIN mdl_block_pu_codes pc ON pcm.code = pc.id
+            $setter
+        WHERE u.deleted = 0
+            AND pgm.current = 1
+            AND c.id = $cid
+            AND u.id = $uid
+            AND pcm.id = $pcmid";
+
+        // Build the array(s).
+        $used = $DB->execute($usedsql);
+
+        // Return the data.
+        return $used;
+    }
 }

@@ -115,6 +115,9 @@ class block_pu extends block_list {
 
         foreach ($this->mapped_codes() AS $mappedcode) {
             if ($mappedcode->valid == 1 && $mappedcode->used == 0) {
+
+                $pcmidnew = $mappedcode->pcmid;
+
                 $countcurrent++;
                 $this->add_item_to_content([
                     'lang_key' => $mappedcode->couponcode,
@@ -125,7 +128,11 @@ class block_pu extends block_list {
         }
 
         foreach ($this->mapped_codes() AS $mappedcode) {
-            if ($mappedcode->valid == 1 && $mappedcode->used == 1 && $countcurrent > 0) {
+            if ($mappedcode->valid == 1 && $mappedcode->used == 1) {
+
+                $pcmidolds[] = $mappedcode->pcmid;
+
+                $countcurrent++;
                 $countpast++;
                 $this->add_item_to_content([
                     'lang_key' => get_string('pu_past', 'block_pu') . $countpast . ': ' . $mappedcode->couponcode,
@@ -139,37 +146,48 @@ class block_pu extends block_list {
             'attributes' => array('class' => 'intro')
         ]);
 
-        $this->add_item_to_content([
-            'lang_key' => get_string('pu_docs_used', 'block_pu'),
-            'attributes' => array('class' => 'litem')
-        ]);
+        if (isset($pcmidnew) && $countcurrent > 0) {
+            $this->add_item_to_content([
+                'lang_key' => get_string('pu_docs_used', 'block_pu'),
+                'attributes' => array('class' => 'litem')
+            ]);
+        }
 
-        if (isset($mappedcode->pcmid)) {
+        if (isset($pcmidnew) && $countcurrent > 0) {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_used', 'block_pu'),
-                'page' => 'used',
-                'query_string' => ['courseid' => $this->course->id, 'pcmid' => $mappedcode->pcmid],
+                'page' => 'coder',
+                'query_string' => ['courseid' => $this->course->id, 'pcmid' => $pcmidnew, 'function' => 'used'],
                 'attributes' => array('class' => 'btn btn-outline-secondary btn-sm pu_used')
             ]);
         }
 
-        $this->add_item_to_content([
-            'lang_key' => get_string('pu_docs_usednum', 'block_pu', ['numused' => $this->usedcount(), 'numtotal' => $this->codetotals()]),
-            'attributes' => array('class' => 'litem')
-        ]);
+        if ($this->usedcount() < $this->codetotals()) {
+            $this->add_item_to_content([
+                'lang_key' => get_string('pu_docs_usednum', 'block_pu', ['numused' => $this->usedcount(), 'numtotal' => $this->codetotals()]),
+                'attributes' => array('class' => 'litem')
+            ]);
+        } else {
+            $this->add_item_to_content([
+                'lang_key' => get_string('pu_docs_noneleft', 'block_pu', ['numused' => $this->usedcount(), 'numtotal' => $this->codetotals()]),
+                'attributes' => array('class' => 'litem')
+            ]);
+        }
 
-        $this->add_item_to_content([
-            'lang_key' => get_string('pu_docs_invalid', 'block_pu'),
-	    'attributes' => array('class' => 'litem')
-        ]);
+        if (isset($pcmidnew) && $countcurrent > 0) {
+            $this->add_item_to_content([
+                'lang_key' => get_string('pu_docs_invalid', 'block_pu'),
+	            'attributes' => array('class' => 'litem')
+            ]);
 
         if (isset($mappedcode->pcmid)) {
             $this->add_item_to_content([
-                'lang_key' => get_string('pu_replace', 'block_pu'),
-                'page' => 'replace',
-                'query_string' => ['courseid' => $this->course->id, 'pcmid' => $mappedcode->pcmid],
-                'attributes' => array('class' => 'btn btn-outline-secondary btn-sm pu_retry')
-            ]);
+                    'lang_key' => get_string('pu_replace', 'block_pu'),
+                    'page' => 'replace',
+                    'query_string' => ['courseid' => $this->course->id, 'pcmid' => $pcmidnew],
+                    'attributes' => array('class' => 'btn btn-outline-secondary btn-sm pu_retry')
+                ]);
+            }
         }
 
         return $this->content;

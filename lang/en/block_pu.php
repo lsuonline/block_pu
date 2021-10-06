@@ -50,7 +50,8 @@ $string['override_numinvalid_help'] = 'Override the default number of replacemen
 // Block strings.
 $string['pu_block_intro'] = 'Your {$a->numused} coupon code(s) for <strong>{$a->coursename}</strong>';
 $string['pu_docs_intro'] = 'What you need to know about PU codes:';
-$string['pu_docs_usednum'] = 'You have used {$a->numused} of the {$a->numtotal} coupon codes for this course';
+$string['pu_docs_usednum'] = 'You have used {$a->numused} of the {$a->numtotal} coupon codes for this course.';
+$string['pu_docs_noneleft'] = 'You have used {$a->numused} of the {$a->numtotal} coupon codes allocated for this course. <br>If you need another code, please contact <a href="mailto:answers@online.lsu.edu">answers@online.lsu.edu</a>.';
 $string['pu_docs_used'] = 'If you have used the top (latest) code and need another for your next exam, please click the "<strong>mark used</strong>" button below:';
 $string['pu_docs_invalid'] = 'If the top (latest) code does not work, request a replacement code by clicking on the "<strong>request replacement</strong>" button below:';
 $string['pu_used'] = 'Mark used';
@@ -65,3 +66,6 @@ $string['pu_try_again'] = 'Retry latest code';
 // Error strings.
 $string['nopermissions'] = 'You do not have permission to modify coupon codes.';
 $string['nopermission'] = 'You do not have permission to modify the requested coupon code.<br><br>Please contact an administrator if you believe you should be able to modify that specific code.';
+$string['markused'] = 'Successfully marked your latest coupon code as used and requested a new code.';
+$string['markinvalid'] = 'Successfully marked your latest coupon code as invalid and requested a replacement code.';
+$string['nothingtodo'] = 'There was nothing to do.';

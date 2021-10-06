@@ -42,6 +42,9 @@ $pageparams = [
 $courseid = $pageparams['courseid'];
 $pcmid    = $pageparams['pcmid'];
 
+// Set the invalid param for later.
+$pageparams['function'] = 'invalid';
+
 // Map the userid.
 $userid   = $USER->id;
 
@@ -97,7 +100,7 @@ $areyousurestr = get_string('pu_yousure', 'block_pu');
 $areyousure = html_writer::span($areyousurestr, 'pu_you_sure');
 
 // Construct the links.
-$replacementlink = html_writer::link(new moodle_url('/blocks/pu/replacement.php',
+$replacementlink = html_writer::link(new moodle_url('/blocks/pu/coder.php',
                                  $pageparams),
                                  get_string('pu_replace', 'block_pu'),
                                  array('class' => 'btn btn-outline-secondary pu_replace'));
