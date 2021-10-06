@@ -55,6 +55,7 @@ $string['pu_docs_noneleft'] = 'You have used {$a->numused} of the {$a->numtotal}
 $string['pu_docs_used'] = 'If you have used the top (latest) code and need another for your next exam, please click the "<strong>mark used</strong>" button below:';
 $string['pu_docs_invalid'] = 'If the top (latest) code does not work, request a replacement code by clicking on the "<strong>request replacement</strong>" button below:';
 $string['pu_used'] = 'Mark used';
+$string['pu_new'] = 'Request a ProctorU coupon code';
 $string['pu_past'] = 'Used code ';
 
 // Interstitial strings.
@@ -68,4 +69,5 @@ $string['nopermissions'] = 'You do not have permission to modify coupon codes.';
 $string['nopermission'] = 'You do not have permission to modify the requested coupon code.<br><br>Please contact an administrator if you believe you should be able to modify that specific code.';
 $string['markused'] = 'Successfully marked your latest coupon code as used and requested a new code.';
 $string['markinvalid'] = 'Successfully marked your latest coupon code as invalid and requested a replacement code.';
+$string['assigned'] = 'You have been assigned a new ProctorU coupon code.';
 $string['nothingtodo'] = 'There was nothing to do.';

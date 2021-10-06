@@ -106,9 +106,18 @@ class block_pu extends block_list {
         $coursecontext = context_course::instance($this->course->id);
 
         // Course-level Features.
-        $this->add_item_to_content([
-            'lang_key' => get_string('pu_block_intro', 'block_pu', ['numused' => $this->usedcount(), 'coursename' => $this->course->fullname])
-        ]);
+        if ($this->usedcount() > 0) {
+            $this->add_item_to_content([
+                'lang_key' => get_string('pu_block_intro', 'block_pu', ['numused' => $this->usedcount(), 'coursename' => $this->course->fullname])
+            ]);
+        } else {
+            $this->add_item_to_content([
+                'lang_key' => get_string('pu_new', 'block_pu'),
+                'page' => 'coder',
+                'query_string' => ['courseid' => $this->course->id, 'pcmid' => 0, 'function' => 'new'],
+                'attributes' => array('class' => 'btn btn-outline-secondary btn-sm pu_new')
+            ]);
+        }
 
         $countpast = 0;
         $countcurrent = 0;
@@ -132,7 +141,6 @@ class block_pu extends block_list {
 
                 $pcmidolds[] = $mappedcode->pcmid;
 
-                $countcurrent++;
                 $countpast++;
                 $this->add_item_to_content([
                     'lang_key' => get_string('pu_past', 'block_pu') . $countpast . ': ' . $mappedcode->couponcode,

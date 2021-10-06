@@ -41,7 +41,7 @@ $pageparams = [
 
 // Map the params to some variables for usability.
 $courseid = $pageparams['courseid'];
-$pcmid    = $pageparams['pcmid'];
+$pcmid    = isset($pageparams['pcmid']) ? $pageparams['pcmid'] : null;
 $function = $pageparams['function'];
 
 // Map the userid.
@@ -49,18 +49,30 @@ $userid   = $USER->id;
 
 $usedorinvalid = $function == 'used' ? get_string('markused', 'block_pu') : get_string('markinvalid', 'block_pu');
 
+if ($pcmid === 0) {
+    block_pu_helpers::pu_assign($params = array('course_id' => $courseid, 'user_id' => $userid));
+    $url = new moodle_url('/course/view.php', array('id' => $courseid), $anchor = 'coursetools');
+    redirect($url, get_string('assigned', 'block_pu'), null, \core\output\notification::NOTIFY_SUCCESS);
+}
+
 // Security check making sure you have access to the PCMID in question.
-if (!block_pu_helpers::guilduser_check($params = array('course_id' => $courseid, 'user_id' => $userid, 'pcmid'=> $pcmid))) {
-    $url = new moodle_url('/course/view.php', array('id' => $courseid));
+if ($pcmid > 0 && !block_pu_helpers::guilduser_check($params = array('course_id' => $courseid, 'user_id' => $userid, 'pcmid'=> $pcmid))) {
+    $url = new moodle_url('/course/view.php', array('id' => $courseid), $anchor = 'coursetools');
     redirect($url, get_string('nopermission', 'block_pu'), null, \core\output\notification::NOTIFY_ERROR);
+}
 
 // If you are who you claim to be and have an associated PCMid for the course in question, mark it used / invalid.
-} else if (block_pu_helpers::pu_mark($params = array('course_id' => $courseid, 'user_id' => $userid, 'pcmid'=> $pcmid, 'function' => $function))) {
-    $url = new moodle_url('/course/view.php', array('id' => $courseid));
+if ($pcmid > 0 && block_pu_helpers::pu_mark($params = array('course_id' => $courseid, 'user_id' => $userid, 'pcmid'=> $pcmid, 'function' => $function))) {
+
+    // We've marked the old code as either invalid or used, now assign a new one.
+    block_pu_helpers::pu_assign($params = array('course_id' => $courseid, 'user_id' => $userid)); 
+
+    // Redirect them to their cooursetools.
+    $url = new moodle_url('/course/view.php', array('id' => $courseid), $anchor = 'coursetools');
     redirect($url, $usedorinvalid, null, \core\output\notification::NOTIFY_SUCCESS);
 
 // If something goes horribly wrong.
 } else {
-    $url = new moodle_url('/course/view.php', array('id' => $courseid));
+    $url = new moodle_url('/course/view.php', array('id' => $courseid), $anchor = 'coursetools');
     redirect($url, get_string('nothingtodo', 'block_pu'), null, \core\output\notification::NOTIFY_NOTICE);
 }

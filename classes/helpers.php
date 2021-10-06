@@ -143,4 +143,44 @@ class block_pu_helpers {
         // Return the data.
         return $used;
     }
+
+    /**
+     * Marks a given code as used or invalif.
+     *
+     * @return object
+     */
+    public static function pu_assign($params) {
+        // Needed to invoke the DB.
+        global $DB;
+
+        // Set up these for later.
+        $cid   = $params['course_id'];
+        $uid   = $params['user_id'];
+
+        // Find the guildmap id for this person / course.
+        $gmid = $DB->get_record('block_pu_guildmaps', array('course' => $cid, 'user' => $uid, 'current' => 1));
+
+        $randsql = "SELECT pc.id AS id
+            FROM mdl_block_pu_codes pc
+            LEFT JOIN mdl_block_pu_codemaps pcm ON pcm.code = pc.id
+            WHERE pcm.id IS NULL
+            AND pc.valid = 1
+            ORDER BY RAND()
+            LIMIT 1";
+
+        // Grab a random valid unassigned record.
+        $pcid = $DB->get_record_sql($randsql);
+
+        // Build the data object.
+        $assigned = new \stdClass();
+        $assigned->code = $pcid->id;
+        $assigned->guild = $gmid->id;
+        $assigned->updater = $uid;
+        $assigned->updatedate = time(); 
+
+        $assigned->id = $DB->insert_record('block_pu_codemaps', $assigned);
+
+        // Return the data.
+        return $assigned;
+    }
 }

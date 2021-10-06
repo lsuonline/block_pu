@@ -59,7 +59,7 @@
   margin-top: -.2em;
 }
 
-.block_pu a.pu_retry:hover , .block_pu a.pu_used:hover {
+.block_pu a.pu_retry:hover , .block_pu a.pu_used:hover, .block_pu a.pu_new:hover {
   text-decoration: none !important;
 }
 
