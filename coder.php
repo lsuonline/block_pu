@@ -64,8 +64,22 @@ if ($pcmid > 0 && !block_pu_helpers::guilduser_check($params = array('course_id'
 // If you are who you claim to be and have an associated PCMid for the course in question, mark it used / invalid.
 if ($pcmid > 0 && block_pu_helpers::pu_mark($params = array('course_id' => $courseid, 'user_id' => $userid, 'pcmid'=> $pcmid, 'function' => $function))) {
 
-    // We've marked the old code as either invalid or used, now assign a new one.
-    block_pu_helpers::pu_assign($params = array('course_id' => $courseid, 'user_id' => $userid)); 
+    // Grab the count of used codes for this course / user.
+    $used  = block_pu_helpers::pu_uvcount($params = array('course_id' => $courseid, 'user_id' => $userid, 'uv' => 'used'));
+
+    // Grab the total number of codes allocated for this course.
+    $total = block_pu_helpers::pu_codetotals($params = array('course_id' => $courseid));
+
+    // Override the lang if we've hit the max number of used codes.
+    if ($used >= $total) {
+        $usedorinvalid = $function == 'used' ? get_string('lastused', 'block_pu') : "Well, shucks!"; 
+    }
+
+    // Only assign a new code if we have codes left.
+    if ($used < $total) {
+        // We've marked the old code as either invalid or used, now assign a new one.
+        block_pu_helpers::pu_assign($params = array('course_id' => $courseid, 'user_id' => $userid)); 
+    }
 
     // Redirect them to their cooursetools.
     $url = new moodle_url('/course/view.php', array('id' => $courseid), $anchor = 'coursetools');
@@ -74,5 +88,5 @@ if ($pcmid > 0 && block_pu_helpers::pu_mark($params = array('course_id' => $cour
 // If something goes horribly wrong.
 } else {
     $url = new moodle_url('/course/view.php', array('id' => $courseid), $anchor = 'coursetools');
-    redirect($url, get_string('nothingtodo', 'block_pu'), null, \core\output\notification::NOTIFY_NOTICE);
+    redirect($url, get_string('nothingtodo', 'block_pu'), null, \core\output\notification::NOTIFY_WARNING);
 }

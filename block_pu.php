@@ -38,6 +38,12 @@ class block_pu extends block_list {
         $this->set_course();
         $this->set_user();
         $this->set_course_context();
+
+        // Set these up for sanity's sake.
+        $this->pu_codetotals    = $this->codetotals();
+        $this->pu_usedcount     = $this->usedcount($uv="used");
+        $this->pu_invalidcount  = $this->usedcount($uv="invalid");
+        $this->pu_totalcount    = $this->usedcount($uv="total");
     }
 
     /**
@@ -106,9 +112,13 @@ class block_pu extends block_list {
         $coursecontext = context_course::instance($this->course->id);
 
         // Course-level Features.
-        if ($this->usedcount() > 0) {
+        if ($this->pu_totalcount > 0 && $this->pu_totalcount < 2) {
             $this->add_item_to_content([
-                'lang_key' => get_string('pu_block_intro', 'block_pu', ['numused' => $this->usedcount(), 'coursename' => $this->course->fullname])
+                'lang_key' => get_string('pu_block_intro_one', 'block_pu', ['coursename' => $this->course->fullname])
+            ]);
+        } else if ($this->pu_totalcount > 1) {
+            $this->add_item_to_content([
+                'lang_key' => get_string('pu_block_intro_multi', 'block_pu', ['numassigned' => $this->pu_totalcount, 'coursename' => $this->course->fullname])
             ]);
         } else {
             $this->add_item_to_content([
@@ -123,7 +133,7 @@ class block_pu extends block_list {
         $countcurrent = 0;
 
         foreach ($this->mapped_codes() AS $mappedcode) {
-            if ($mappedcode->valid == 1 && $mappedcode->used == 0) {
+            if ($mappedcode->valid == 1 && $mappedcode->used == 0 && $this->pu_usedcount < $this->pu_totalcount) {
 
                 $pcmidnew = $mappedcode->pcmid;
 
@@ -154,14 +164,19 @@ class block_pu extends block_list {
             'attributes' => array('class' => 'intro')
         ]);
 
-        if (isset($pcmidnew) && $countcurrent > 0) {
+        if (isset($pcmidnew) && $this->pu_totalcount < $this->pu_codetotals && ($this->pu_usedcount > 0 || $this->pu_totalcount > 0)) {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_docs_used', 'block_pu'),
                 'attributes' => array('class' => 'litem')
             ]);
-        }
+        } else if (isset($pcmidnew) && $this->pu_totalcount >= $this->pu_codetotals && ($this->pu_usedcount > 0 || $this->pu_totalcount > 0)) {
+            $this->add_item_to_content([
+                'lang_key' => get_string('pu_docs_requestedall', 'block_pu'),
+                'attributes' => array('class' => 'litem')
+            ]);
+        } 
 
-        if (isset($pcmidnew) && $countcurrent > 0) {
+        if (isset($pcmidnew) && $this->pu_totalcount > 0 && $this->pu_totalcount <= $this->pu_codetotals) {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_used', 'block_pu'),
                 'page' => 'coder',
@@ -170,32 +185,54 @@ class block_pu extends block_list {
             ]);
         }
 
-        if ($this->usedcount() < $this->codetotals()) {
+        if ($this->pu_totalcount > 0 && $this->pu_usedcount == 0) {
             $this->add_item_to_content([
-                'lang_key' => get_string('pu_docs_usednum', 'block_pu', ['numused' => $this->usedcount(), 'numtotal' => $this->codetotals()]),
+                'lang_key' => get_string('pu_docs_allocatednum', 'block_pu', ['numallocated' => $this->pu_totalcount, 'numtotal' => $this->pu_codetotals]),
+                'attributes' => array('class' => 'litem')
+            ]);
+        } else if ($this->pu_usedcount > 0 && $this->pu_usedcount < $this->pu_codetotals) {
+            $this->add_item_to_content([
+                'lang_key' => get_string('pu_docs_usednum', 'block_pu', ['numused' => $this->pu_usedcount, 'numtotal' => $this->pu_codetotals]),
+                'attributes' => array('class' => 'litem')
+            ]);
+        } else if ($this->pu_totalcount > 0 && $this->pu_usedcount >= $this->pu_codetotals) {
+            $this->add_item_to_content([
+                'lang_key' => get_string('pu_docs_noneleft', 'block_pu'),
                 'attributes' => array('class' => 'litem')
             ]);
         } else {
             $this->add_item_to_content([
-                'lang_key' => get_string('pu_docs_noneleft', 'block_pu', ['numused' => $this->usedcount(), 'numtotal' => $this->codetotals()]),
+                'lang_key' => get_string('pu_docs_intronone', 'block_pu', ['numtotal' => $this->pu_codetotals]),
                 'attributes' => array('class' => 'litem')
             ]);
         }
 
-        if (isset($pcmidnew) && $countcurrent > 0) {
+        if (isset($pcmidnew) && $this->pu_invalidcount < $this->pu_codetotals && $this->pu_totalcount > 0) {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_docs_invalid', 'block_pu'),
 	            'attributes' => array('class' => 'litem')
             ]);
 
-        if (isset($mappedcode->pcmid)) {
             $this->add_item_to_content([
                     'lang_key' => get_string('pu_replace', 'block_pu'),
                     'page' => 'replace',
                     'query_string' => ['courseid' => $this->course->id, 'pcmid' => $pcmidnew],
                     'attributes' => array('class' => 'btn btn-outline-secondary btn-sm pu_retry')
+            ]);
+
+            if ($this->pu_invalidcount < $this->pu_codetotals && $this->pu_invalidcount > 0) {
+                $this->add_item_to_content([
+                    'lang_key' => get_string('pu_docs_invalidsused', 'block_pu', ['numused' => $this->pu_invalidcount, 'numtotal' => $this->pu_codetotals]),
+                    'attributes' => array('class' => 'litem')
                 ]);
             }
+        }
+
+        if ($this->pu_invalidcount >= $this->pu_codetotals) {
+            $this->add_item_to_content([
+                'lang_key' => get_string('pu_docs_invalidsfull', 'block_pu', ['numused' => $this->pu_invalidcount, 'numtotal' => $this->pu_codetotals]),
+                'attributes' => array('class' => 'litem')
+            ]);
         }
 
         return $this->content;
@@ -208,14 +245,11 @@ class block_pu extends block_list {
      * @return bool
      */
     private function guilduser($params) {
-        require_once('classes/helpers.php');
         block_pu_helpers::guilduser_check($params);
     }
 
     private function codetotals() {
-        global $CFG;
-
-        return $CFG->block_pu_defaultcodes;
+        return block_pu_helpers::pu_codetotals($this->course->id);
     }
 
 
@@ -249,16 +283,26 @@ class block_pu extends block_list {
     }
 
     /**
+     * Instantiates the public method in the private context.
+     *
      * Counts the number of coupon codes assigned to a person in a course context.
      *
-     * @param  array $params  [user_id, course_id]
+     * @param  array $params  [ uv ]
      * @return int
      */
-    private function usedcount() {
+    private function usedcount($uv="used") {
         global $DB;
 
-        // TODO Implement caching so we only call this once in a while.
-        $count = count($this->mapped_codes());
+        // Set up the course id for later.
+        $cid = $this->course->id;
+
+        // Set up the user id for later.
+        $uid = $this->user->id;
+
+        // Get the used count.
+        $count = block_pu_helpers::pu_uvcount(array('course_id' => $cid, 'user_id' => $uid, 'uv' => $uv));
+
+        // Return the count.
         return $count;
     }
 
@@ -269,8 +313,6 @@ class block_pu extends block_list {
      * @return void
      */
     private function add_item_to_content($params) {
-       require_once('classes/helpers.php');
-
         if (!array_key_exists('query_string', $params)) {
             $params['query_string'] = [];
         }

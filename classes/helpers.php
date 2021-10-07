@@ -120,6 +120,12 @@ class block_pu_helpers {
         $pcmid = $params['pcmid'];
         $func  = $params['function'];
 
+        // Grab the count of used codes for this course / user.
+        $numused  = self::pu_uvcount($params = array('course_id' => $cid, 'user_id' => $uid, 'uv' => $func));
+
+        // Grab the total number of codes allocated for this course.
+        $total = self::pu_codetotals($params = array('course_id' => $cid, 'uv' => $func));
+
         // Build the setter.
         $setval = $func == 'used' ? 1 : 0;
         $setter = $func == 'used' ? "SET pc.used=$setval" : "SET pc.valid=$setval";
@@ -138,9 +144,13 @@ class block_pu_helpers {
             AND pcm.id = $pcmid";
 
         // Build the array(s).
-        $used = $DB->execute($usedsql);
+        if ($numused < $total) {
+            $used = $DB->execute($usedsql);
+        } else {
+            $used = false;
+        }
 
-        // Return the data.
+        // Return the boolean.
         return $used;
     }
 
@@ -182,5 +192,49 @@ class block_pu_helpers {
 
         // Return the data.
         return $assigned;
+    }
+
+    /**
+     * Returns the count of used codes for this course / user.
+     *
+     * @return int
+     */
+    public static function pu_uvcount($params) {
+        // Needed to invoke the DB.
+        global $DB;
+
+        // Set up these for later.
+        $cid   = $params['course_id'];
+        $uid   = $params['user_id'];
+        $uv    = $params['uv'];
+
+        if ($uv == "used") {
+            $uvands = "AND pc.used = 1 AND pc.valid = 1";
+        } else if ($uv == "invalid") {
+            $uvands = "AND pc.valid = 0";
+        } else {
+            $uvands = "AND pc.valid = 1";
+        }
+
+        $uvsql = "SELECT COUNT(pcm.id) AS pcmcount
+            FROM mdl_block_pu_guildmaps pgm
+                INNER JOIN mdl_block_pu_codemaps pcm ON pcm.guild = pgm.id
+                INNER JOIN mdl_block_pu_codes pc ON pcm.code = pc.id
+            WHERE pgm.current = 1
+                AND pgm.course = $cid
+                AND pgm.user = $uid
+                $uvands";
+
+        // Grab a random valid unassigned record.
+        $uvcount = $DB->get_record_sql($uvsql);
+
+        // Return the data.
+        return $uvcount->pcmcount;
+    }
+
+    public static function pu_codetotals($params) {
+        global $CFG;
+
+        return $CFG->block_pu_defaultcodes;
     }
 }
