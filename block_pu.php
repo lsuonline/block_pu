@@ -40,7 +40,8 @@ class block_pu extends block_list {
         $this->set_course_context();
 
         // Set these up for sanity's sake.
-        $this->pu_codetotals    = $this->codetotals();
+        $this->pu_codetotals    = $this->codetotals($this->course->id)->codecount;
+        $this->pu_invalidtotals = $this->codetotals($this->course->id)->invalidcount;
         $this->pu_usedcount     = $this->usedcount($uv="used");
         $this->pu_invalidcount  = $this->usedcount($uv="invalid");
         $this->pu_totalcount    = $this->usedcount($uv="total");
@@ -185,6 +186,15 @@ class block_pu extends block_list {
             ]);
         }
 
+        if (!isset($pcmidnew) && $this->pu_totalcount > 0 && $this->pu_totalcount < $this->pu_codetotals) {
+            $this->add_item_to_content([
+                'lang_key' => get_string('pu_new', 'block_pu'),
+                'page' => 'coder',
+                'query_string' => ['courseid' => $this->course->id, 'pcmid' => 0, 'function' => 'new'],
+                'attributes' => array('class' => 'btn btn-outline-secondary btn-sm pu_new')
+            ]);
+        }
+
         if ($this->pu_totalcount > 0 && $this->pu_usedcount == 0) {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_docs_allocatednum', 'block_pu', ['numallocated' => $this->pu_totalcount, 'numtotal' => $this->pu_codetotals]),
@@ -207,7 +217,7 @@ class block_pu extends block_list {
             ]);
         }
 
-        if (isset($pcmidnew) && $this->pu_invalidcount < $this->pu_codetotals && $this->pu_totalcount > 0) {
+        if (isset($pcmidnew) && $this->pu_invalidcount < $this->pu_invalidtotals && $this->pu_totalcount > 0) {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_docs_invalid', 'block_pu'),
 	            'attributes' => array('class' => 'litem')
@@ -220,20 +230,24 @@ class block_pu extends block_list {
                     'attributes' => array('class' => 'btn btn-outline-secondary btn-sm pu_retry')
             ]);
 
-            if ($this->pu_invalidcount < $this->pu_codetotals && $this->pu_invalidcount > 0) {
+            if ($this->pu_invalidcount < $this->pu_invalidtotals && $this->pu_invalidcount > 0) {
                 $this->add_item_to_content([
-                    'lang_key' => get_string('pu_docs_invalidsused', 'block_pu', ['numused' => $this->pu_invalidcount, 'numtotal' => $this->pu_codetotals]),
+                    'lang_key' => get_string('pu_docs_invalidsused', 'block_pu', ['numused' => $this->pu_invalidcount, 'numtotal' => $this->pu_invalidtotals]),
                     'attributes' => array('class' => 'litem')
                 ]);
             }
         }
 
-        if ($this->pu_invalidcount >= $this->pu_codetotals) {
+        if ($this->pu_invalidcount >= $this->pu_invalidtotals) {
             $this->add_item_to_content([
-                'lang_key' => get_string('pu_docs_invalidsfull', 'block_pu', ['numused' => $this->pu_invalidcount, 'numtotal' => $this->pu_codetotals]),
+                'lang_key' => get_string('pu_docs_invalidsfull', 'block_pu', ['numused' => $this->pu_invalidcount, 'numtotal' => $this->pu_invalidtotals]),
                 'attributes' => array('class' => 'litem')
             ]);
         }
+        echo"<br><br><br>codecount: ";
+        print_r($this->pu_codetotals);
+        echo"<br>invalidcount: ";
+        print_r($this->pu_invalidtotals);
 
         return $this->content;
     }
@@ -248,8 +262,15 @@ class block_pu extends block_list {
         block_pu_helpers::guilduser_check($params);
     }
 
-    private function codetotals() {
-        return block_pu_helpers::pu_codetotals($this->course->id);
+    private function codetotals($courseid) {
+        $codetotals = block_pu_helpers::pu_codetotals($params = array('course_id' => $courseid));
+/*
+        echo"<br><br><br><pre>";
+        var_dump($codetotals);
+        echo"</pre><br>";
+*/
+
+        return $codetotals;
     }
 
 

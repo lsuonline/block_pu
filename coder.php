@@ -71,12 +71,12 @@ if ($pcmid > 0 && block_pu_helpers::pu_mark($params = array('course_id' => $cour
     $total = block_pu_helpers::pu_codetotals($params = array('course_id' => $courseid));
 
     // Override the lang if we've hit the max number of used codes.
-    if ($used >= $total) {
+    if ($used >= $total->codecount) {
         $usedorinvalid = $function == 'used' ? get_string('lastused', 'block_pu') : "Well, shucks!"; 
     }
 
     // Only assign a new code if we have codes left.
-    if ($used < $total) {
+    if ($used < $total->codecount) {
         // We've marked the old code as either invalid or used, now assign a new one.
         block_pu_helpers::pu_assign($params = array('course_id' => $courseid, 'user_id' => $userid)); 
     }

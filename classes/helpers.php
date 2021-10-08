@@ -232,9 +232,38 @@ class block_pu_helpers {
         return $uvcount->pcmcount;
     }
 
+    /**
+     * Returns the number of codes and replacements allowed.
+     *
+     * @param array $params [ courseid ]
+     * @return object
+     */
     public static function pu_codetotals($params) {
-        global $CFG;
+        global $CFG, $DB;
 
-        return $CFG->block_pu_defaultcodes;
+        // Grab the course id for later use.
+        $cid = $params['course_id'];
+
+        // Set up the site level default object.
+        $defaults = new \stdClass();
+        $defaults->id = 0;
+        $defaults->course = $cid;
+        $defaults->codecount = $CFG->block_pu_defaultcodes;
+        $defaults->invalidcount = $CFG->block_pu_defaultcodes;
+
+        // Build the override object.
+        $override = $DB->get_record('block_pu_overrides', array('course' => $cid));
+
+        if (isset($override->id)) {
+            // Make sure there is actually a code count set.
+            $override->codecount = !empty($override->codecount) ? $override->codecount : $defaults->codecount;
+            // Make sure there is actually an override set.
+            $override->invalidcount = !empty($override->invalidcount) ? $override->invalidcount : $defaults->invalidcount;
+            // Return the override object.
+            return $override;
+        } else {
+           // Return the site default object.
+           return $defaults;
+        }
     }
 }
