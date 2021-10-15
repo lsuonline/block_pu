@@ -38,20 +38,28 @@ $string['backtocourse'] = 'Back to course';
 $string['backtohome'] = 'Back to home';
 
 // Settings management.
-$string['default_numcodes'] = '# of codes';
-$string['default_numcodes_help'] = 'The default number of coupon codes issued to a user in a course';
+$string['default_numcodes'] = '# of exams';
+$string['default_numcodes_help'] = 'The default number of proctored exams (ProctorU coupon codes) issued to a user in a course';
 
 // Configuration.
-$string['override_numcodes'] = '# of exams';
+$string['manage_overrides'] = 'Manage overrides';
+$string['manage_overrides_help'] = 'Manage the number of proctored exams and replacement ProctorU coupon codes at the course shell level.
+                                    <strong>This setting, if overridden, will be the final determining factor for how many exams (coupon codes) 
+                                    and how many replacement coupon codes are allowed per person in the specified course.</strong>';
+$string['manage_overrides_help2'] = 'Please note the sitewide default for ProctorU coupon codes per course is {$a->percourse}.
+                                     The number of replacement codes is tied to the sitewide default of {$a->percourse} as well. Feel free to override these values below.';
+$string['override_numcodes'] = 'Number of exams';
 $string['override_numcodes_help'] = 'Override the default number of coupon codes for this course.';
-$string['override_numinvalid'] = '# of replacement codes';
+$string['override_numinvalid'] = 'Number of replacement codes';
 $string['override_numinvalid_help'] = 'Override the default number of replacement codes for this course. By default this is capped at the number of exams in this course.';
+$string['defaultsnull_codes'] = 'The defualt for this course is {$a->numcodes}.';
 
 // Block strings.
 $string['pu_block_intro_one'] = 'Here is your first coupon code for <strong>{$a->coursename}</strong>';
 $string['pu_block_intro_multi'] = 'Here are your {$a->numassigned} coupon codes for <strong>{$a->coursename}</strong>';
 $string['pu_docs_intro'] = 'What you need to know about PU codes:';
-$string['pu_docs_intronone'] = 'You have been allocated {$a->numtotal} coupon codes for this course.<br>Please click the "Request a ProctorU coupon code" button to request your first coupon code for this course.';
+$string['pu_docs_intronone'] = 'You have been allocated {$a->numtotal} coupon codes for this course.
+                                <br>Please click the "Request a ProctorU coupon code" button to request your first coupon code for this course.';
 $string['pu_docs_allocatednum'] = 'You have <strong>requested</strong> {$a->numallocated} of the {$a->numtotal} coupon codes for this course.';
 $string['pu_docs_usednum'] = 'You have <strong>used</strong> {$a->numused} of the {$a->numtotal} coupon codes for this course.';
 $string['pu_docs_noneleft'] = 'You have used all of the coupon codes allocated for this course.<br>If you need another code, please contact <a href="mailto:answers@online.lsu.edu">answers@online.lsu.edu</a>.';
@@ -68,7 +76,6 @@ $string['pu_past'] = 'Used code ';
 $string['pu_yousure'] = 'Are you sure you want to request a replacement ProctorU coupon code?';
 $string['pu_replace'] = 'Request replacement';
 $string['pu_try_again'] = 'Retry latest code';
-
 
 // Error strings.
 $string['nopermissions'] = 'You do not have permission to modify coupon codes.';

@@ -106,7 +106,7 @@ class block_pu_helpers {
     }
 
     /**
-     * Marks a given code as used or invalif.
+     * Marks a given code as used or invalid.
      *
      * @return bool
      */
@@ -250,20 +250,75 @@ class block_pu_helpers {
         $defaults->course = $cid;
         $defaults->codecount = $CFG->block_pu_defaultcodes;
         $defaults->invalidcount = $CFG->block_pu_defaultcodes;
+        $defaults->overridecode = false;
+        $defaults->overrideinvalid = false;
 
         // Build the override object.
         $override = $DB->get_record('block_pu_overrides', array('course' => $cid));
 
         if (isset($override->id)) {
             // Make sure there is actually a code count set.
-            $override->codecount = !empty($override->codecount) ? $override->codecount : $defaults->codecount;
+            $override->overridecode = isset($override->codecount) ? true : false;
+            $override->codecount = $override->overridecode ? $override->codecount : $defaults->codecount;
+
             // Make sure there is actually an override set.
-            $override->invalidcount = !empty($override->invalidcount) ? $override->invalidcount : $defaults->invalidcount;
+            $override->overrideinvalid = isset($override->invalidcount) ? true : false;
+            $override->invalidcount = $override->overrideinvalid ? $override->invalidcount : $defaults->invalidcount;
+
             // Return the override object.
             return $override;
         } else {
            // Return the site default object.
            return $defaults;
         }
+    }
+
+    /**
+     * Returns an array of objects.
+     *
+     * The overrides array is a collection of the GUILD courseid and it's specific 
+     *     number of codes and replacements allowed for all GUILD courses.
+     *
+     * @return array
+     */
+    public static function pu_overrides($guildcourses) {
+        // Set up the final object.
+        $data = new \stdClass;
+
+        // Loop through these to get the data we need.
+        foreach ($guildcourses as $guildcourse) {
+
+            // Build the array of overrides and their statuses.
+            $overrides[] = self::pu_codetotals(array('course_id' => $guildcourse->course));
+        }
+
+    return $overrides;
+    }
+
+
+    /**
+     */
+    public static function pu_override($guildcourse) {
+        // Build the array of the override and its status.
+        $override = self::pu_codetotals(array('course_id' => $guildcourse));
+
+        return $override;
+    }
+
+    /**
+     * Returns an array of courseids.
+     *
+     * @return array
+     */
+    public static function pu_guildcourses() {
+        global $DB;
+
+        // Build the SQL for use.
+        $sql = 'SELECT course FROM {block_pu_guildmaps} WHERE current = 1 GROUP BY course';
+
+        // Get the GUILD course data.
+        $guildcourses = $DB->get_records_sql($sql);
+
+    return $guildcourses;
     }
 }
