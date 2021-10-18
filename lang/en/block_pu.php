@@ -41,6 +41,11 @@ $string['backtohome'] = 'Back to home';
 // Settings management.
 $string['default_numcodes'] = '# of exams';
 $string['default_numcodes_help'] = 'The default number of proctored exams (ProctorU coupon codes) issued to a user in a course';
+$string['pu_ccfile'] = 'Coupon Codes File';
+$string['pu_ccfile_help'] = 'The location for the ProctorU coupon codes file.<br>One coupon per line with no header, please.';
+
+$string['pu_guildfile'] = 'Guild Mapping File';
+$string['pu_guildfile_help'] = 'The location for the GUILD section / student mapping file.<br>One comma seperated sectionid, LSUID pair per line with no header.<br>2021ENGL1001, 891234567';
 
 // Configuration.
 $string['manage_overrides'] = 'Manage overrides';

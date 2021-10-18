@@ -27,13 +27,14 @@ defined('MOODLE_INTERNAL') || die();
 require_once('classes/helpers.php');
 
 class block_pu extends block_list {
-
     public $course;
     public $user;
     public $content;
     public $coursecontext;
 
     public function init() {
+        global $CFG;
+
         $this->title = get_string('pluginname', 'block_pu');
         $this->set_course();
         $this->set_user();

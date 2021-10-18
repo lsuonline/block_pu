@@ -43,6 +43,24 @@ if ($ADMIN->fulltree) {
             3 // Default.
         )
     );
+
+    $settings->add(
+        new admin_setting_configtext(
+            'block_pu_ccfile',
+            get_string('pu_ccfile', 'block_pu'),
+            get_string('pu_ccfile_help', 'block_pu'),
+            3 // Default.
+        )
+    );
+
+    $settings->add(
+        new admin_setting_configtext(
+            'block_pu_guildfile',
+            get_string('pu_guildfile', 'block_pu'),
+            get_string('pu_guildfile_help', 'block_pu'),
+            3 // Default.
+        )
+    );
 }
 
 // Add the folder.
