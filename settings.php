@@ -23,6 +23,16 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+// Set the string for use later.
+$fn = new lang_string('foldername', 'block_pu');
+
+// Create the folder / submenu.
+$ADMIN->add('blocksettings', new admin_category('blockpufolder', $fn));
+
+// Create the settings block.
+$settings = new admin_settingpage($section, get_string('settings'));
+
+// Make sure only admins see this one.
 if ($ADMIN->fulltree) {
     // Default coupon codes per course
     $settings->add(
@@ -34,3 +44,23 @@ if ($ADMIN->fulltree) {
         )
     );
 }
+
+// Add the folder.
+$ADMIN->add('blockpufolder', $settings);
+
+// Set the url for the ProctorU override tool.
+$puoverride = new admin_externalpage('manage_overrides',
+              new lang_string('manage_overrides', 'block_pu'),
+              "$CFG->wwwroot/blocks/pu/overrides.php"
+);
+
+// Add the ProctorU override tool url.
+$context = \context_system::instance();
+
+// Add the link for those who have access.
+if (has_capability('block/pu:admin', $context)) {
+    $ADMIN->add('blockpufolder', $puoverride);
+}
+
+// Prevent Moodle from adding settings block in standard location.
+$settings = null;

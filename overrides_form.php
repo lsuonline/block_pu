@@ -42,12 +42,6 @@ class pu_overrides_form extends moodleform {
     public $page;
 
     /**
-     * Defaults.
-     * @var array
-     */
-    protected $defaults = [];
-
-    /**
      * The main constructor.
      * @param array $actionurl, $block, $page
      */
@@ -65,31 +59,48 @@ class pu_overrides_form extends moodleform {
     function definition() {
         $mform =& $this->_form;
 
-        // Then show the fields about where this block appears.
+        // Add the header.
         $mform->addElement('header', 'overidesheader', get_string('manage_overrides', 'block_pu'));
+
+        // Add a description.
         $mform->addElement('static', 'overrideshelp', get_string('manage_overrides_help2', 'block_pu', array('percourse' => $this->sitedefaults)));
+
+        // Loop through the list of guildcourses.
         foreach ($this->guildcourses as $guildcourse) {
+
+            // Build the course object from the courseid.
             $course = get_course($guildcourse->course);
+
+            // Set the override.
             $override = block_pu_helpers::pu_override($course->id);
 
+            // Add a starting div to wrap these forms.
             $mform->addElement('html', '<div class="pu_course">');
 
+            // Add the course/setting with null overrides.
             $mform->addElement('text', 'codecount_' . $override->course, '<strong>' . $course->fullname . "</strong><br>" . get_string('override_numcodes', 'block_pu'), array('class' => 'codecount'));
-            $mform->setType('codecount_' . $override->course, PARAM_INT);
+            $mform->setType('codecount_' . $override->course, PARAM_RAW);
 
+            // If we have an override value, set the default override value based on it.
             if ($override->overridecode) {
                 $mform->setDefault('codecount_'. $override->course, $override->codecount);
             }
 
+            // Add the course/setting with null invalids.
             $mform->addElement('text', 'invalidcount_' . $override->course, get_string('override_numinvalid', 'block_pu'), array('class' => 'invalidcount'));
-            $mform->setType('invalidcount_' . $override->course, PARAM_INT);
+            $mform->setType('invalidcount_' . $override->course, PARAM_RAW);
 
+            // If we have an invalid override value, set the defualt invalid value based on it.
             if ($override->overrideinvalid) {
                 $mform->setDefault('invalidcount_'. $override->course, $override->invalidcount);
             }
-            $mform->addElement('html', '</div>');
 
+            // Add the closing div.
+            $mform->addElement('html', '</div>');
         }
+
+        // Add the action buttons.
+        $this->add_action_buttons();
     }
 
     /**
@@ -100,10 +111,7 @@ class pu_overrides_form extends moodleform {
      */
     public function get_data() {
         if ($data = parent::get_data()) {
-            // Blocklib expects 'bui_editingatfrontpage' property to be returned from this form.
-            $data->bui_editingatfrontpage = $this->is_editing_the_frontpage();
-            // Some fields are non-editable and we need to populate them with the values from set_data().
-            return (object)((array)$data + $this->defaults);
+            return (object)((array)$data);
         }
         return $data;
     }

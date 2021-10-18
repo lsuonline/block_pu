@@ -244,12 +244,15 @@ class block_pu_helpers {
         // Grab the course id for later use.
         $cid = $params['course_id'];
 
+        // Set this up for later.
+        $sitesetting = isset($CFG->block_pu_defaultcodes) ? $CFG->block_pu_defaultcodes : 3;
+
         // Set up the site level default object.
         $defaults = new \stdClass();
         $defaults->id = 0;
         $defaults->course = $cid;
-        $defaults->codecount = $CFG->block_pu_defaultcodes;
-        $defaults->invalidcount = $CFG->block_pu_defaultcodes;
+        $defaults->codecount = $sitesetting;
+        $defaults->invalidcount = $sitesetting;
         $defaults->overridecode = false;
         $defaults->overrideinvalid = false;
 
@@ -320,5 +323,133 @@ class block_pu_helpers {
         $guildcourses = $DB->get_records_sql($sql);
 
     return $guildcourses;
+    }
+
+    /**
+     * @return array
+     */
+    public static function pu_writeoverrides($fromform, $userid) {
+        global $DB;
+
+        // Loop through the key value pair data sent by the form.
+        foreach ($fromform as $key => $value) {
+
+           // Build the types for use in the future.
+           $types = explode("_", $key);
+
+           // If we have not set data, set the value to null.
+           $intvalue = $value == '' ? null : (int)$value;
+
+           // If we have set the command and courseid, do stuff.
+           if (isset($types[0]) && isset($types[1])) {
+
+               // Set the command.
+               $command  = $types[0];
+
+               // Set the courseid.
+               $courseid = $types[1];
+
+               // Check and insert / update records as required.
+               $orcomplete = self::pu_updaterecords($command, $courseid, $intvalue);
+           }
+       }
+
+       return true;
+    }
+
+    public static function pu_updaterecords($command, $courseid, $intvalue=null) {
+        // First we check to make sure we're working with a set value.
+        if (isset($intvalue)) {
+
+            // Check to see if this record exists.
+            $recordexists = self::pu_checkrecord($command, $courseid, $intvalue);
+
+            // Just in case we don't find a specific matching record, look for course level entries.
+            $courseexists = self::pu_checkcourse($courseid);
+
+            // If we don't have a course level entry.
+            if (!$courseexists) {
+                // Insert the new record.
+                self::pu_updaterecord($id=null, $courseid, $command, $intvalue, 'insert');
+
+            // If we have a 100% matching record, leave it.
+            } else if ($recordexists) {
+
+            // If we have a course entry but not a 100% matching record, update it.
+            } else if (!$recordexists) {
+                // Update the record.
+                self::pu_updaterecord($courseexists->id, $courseid, $command, $intvalue, 'update');
+            }
+        }
+    }
+
+    /**
+     * Returns an object from the block_pu_overrides table.
+     *
+     * @return object
+     */
+    public static function pu_checkrecord($command, $courseid, $intvalue) {
+        global $DB;
+
+        // Build the SQL for use.
+        $recordsql = 'SELECT id FROM {block_pu_overrides} WHERE course = ' . $courseid . ' AND ' . $command . ' = ' . $intvalue;
+
+        // Get the record.
+        $recordexists = $DB->get_record_sql($recordsql);
+
+        return $recordexists;
+    }
+
+    /**
+     * Returns an object from the block_pu_overrides table.
+     *
+     * @return object
+     */
+    public static function pu_checkcourse($courseid) {
+        global $DB;
+
+        // Build the SQL for use.
+        $coursesql = 'SELECT id FROM {block_pu_overrides} WHERE course = ' . $courseid;
+
+        // Get the course entry.
+        $courseexists = $DB->get_record_sql($coursesql);
+
+        return $courseexists;
+    }
+
+    /**
+     * Updates the block_pu_overrides table.
+     *
+     * @return bool
+     */
+    public static function pu_updaterecord($id, $courseid, $command, $intvalue, $action) {
+        global $DB;
+
+        // Build the data object.
+        $data = new \stdClass();
+
+        // Set the courseid from the passed value.
+        $data->course = $courseid;
+
+        // Set what data we need to.
+        $data->$command = $intvalue;
+
+        // If we're updating an existing record.
+        if ($action == 'update') {
+
+            // Set the id.
+            $data->id = $id;
+
+            // Update the record.
+            $updated = $DB->update_record('block_pu_overrides', $data, $bulk=false);
+
+        // If we're inserting a new record.
+        } else {
+
+            // Update the record.
+            $updated = $DB->insert_record('block_pu_overrides', $data, $returnid=true, $bulk=false);
+        }
+
+        return $updated;
     }
 }

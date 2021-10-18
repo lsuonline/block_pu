@@ -25,6 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 
 // Block.
 $string['pluginname'] = 'ProctorU Coupon Codes';
+$string['foldername'] = 'ProctorU Coupons';
 
 // Tasks.
 
@@ -85,3 +86,4 @@ $string['lastused'] = 'Successfully marked your final coupon code as used.';
 $string['markinvalid'] = 'Successfully marked your latest coupon code as invalid and requested a replacement code.';
 $string['assigned'] = 'You have been assigned a new ProctorU coupon code.';
 $string['nothingtodo'] = 'There was nothing to do.';
+$string['override_complete'] = 'Successfully saved override values.';

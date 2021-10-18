@@ -61,11 +61,8 @@ $guildcourses = block_pu_helpers::pu_guildcourses();
 // Build the list of overrides.
 $overrides = block_pu_helpers::pu_overrides($guildcourses);
 
-// Output the page header.
-echo $OUTPUT->header();
-
 // Build the form.
-$form = new pu_overrides_form('cnn.com', $guildcourses, $PAGE);
+$form = new pu_overrides_form(null, $guildcourses, $PAGE);
 
 // Set default data (if any).
 $form->set_data($overrides);
@@ -78,12 +75,20 @@ if ($form->is_cancelled()) {
 } else if ($fromform = $form->get_data()) {
   //In this case you process validated data. $mform->get_data() returns data posted in form.
 
-} else {
-  // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
-  // or on the first display of the form.
+    $orcomplete = block_pu_helpers::pu_writeoverrides($fromform, $userid = $USER->id);
 
-  // Displays the form;
-  $form->display();
+    if ($orcomplete) {
+        redirect($returnurl, get_string('override_complete', 'block_pu'), 10, \core\output\notification::NOTIFY_SUCCESS);
+    } else {
+        $form->display();
+    }
+
+} else {
+    // Output the page header.
+    echo $OUTPUT->header();
+
+    // Display the form.
+    $form->display();
 }
 
 echo $OUTPUT->footer();

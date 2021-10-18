@@ -40,11 +40,13 @@ class block_pu extends block_list {
         $this->set_course_context();
 
         // Set these up for sanity's sake.
-        $this->pu_codetotals    = $this->codetotals($this->course->id)->codecount;
-        $this->pu_invalidtotals = $this->codetotals($this->course->id)->invalidcount;
-        $this->pu_usedcount     = $this->usedcount($uv="used");
-        $this->pu_invalidcount  = $this->usedcount($uv="invalid");
-        $this->pu_totalcount    = $this->usedcount($uv="total");
+        if (isset($CFG->block_pu_defaultcodes)) {
+            $this->pu_codetotals    = $this->codetotals($this->course->id)->codecount;
+            $this->pu_invalidtotals = $this->codetotals($this->course->id)->invalidcount;
+            $this->pu_usedcount     = $this->usedcount($uv="used");
+            $this->pu_invalidcount  = $this->usedcount($uv="invalid");
+            $this->pu_totalcount    = $this->usedcount($uv="total");
+        }
     }
 
     /**
@@ -244,11 +246,6 @@ class block_pu extends block_list {
                 'attributes' => array('class' => 'litem')
             ]);
         }
-        echo"<br><br><br>codecount: ";
-        print_r($this->pu_codetotals);
-        echo"<br>invalidcount: ";
-        print_r($this->pu_invalidtotals);
-
         return $this->content;
     }
 
@@ -264,11 +261,6 @@ class block_pu extends block_list {
 
     private function codetotals($courseid) {
         $codetotals = block_pu_helpers::pu_codetotals($params = array('course_id' => $courseid));
-/*
-        echo"<br><br><br><pre>";
-        var_dump($codetotals);
-        echo"</pre><br>";
-*/
 
         return $codetotals;
     }
