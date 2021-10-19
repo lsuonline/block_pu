@@ -15,16 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Setting up the scheduled task.
+ *
  * @package    block_pu
- * @copyright  2021 onwards LSU Online & Continuing Education
+ * @copyright  2021 onwards LSUOnline & Continuing Education
  * @copyright  2021 onwards Robert Russo
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'block_pu';
-$plugin->version = 2021101800;
-$plugin->requires = 2016052300;
-$plugin->release = "v0.9";
-$plugin->maturity = MATURITY_BETA;
+// Define the task defaults.
+$tasks = array(
+    array(
+        'classname' => 'block_pu\task\import_pu',
+        'blocking' => 0,
+        'minute' => '0',
+        'hour' => '0',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    )
+);

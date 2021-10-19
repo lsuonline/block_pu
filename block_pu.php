@@ -24,7 +24,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 // Inlcude the requisite helpers functionality.
-require_once('classes/helpers.php');
+require_once($CFG->dirroot . '/blocks/pu/classes/helpers.php');
 
 class block_pu extends block_list {
     public $course;
@@ -241,12 +241,18 @@ class block_pu extends block_list {
             }
         }
 
-        if ($this->pu_invalidcount >= $this->pu_invalidtotals) {
+        if ($this->pu_invalidcount >= $this->pu_invalidtotals && $this->pu_invalidtotals > 0) {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_docs_invalidsfull', 'block_pu', ['numused' => $this->pu_invalidcount, 'numtotal' => $this->pu_invalidtotals]),
                 'attributes' => array('class' => 'litem')
             ]);
+        } else if ($this->pu_invalidcount >= $this->pu_invalidtotals) {
+            $this->add_item_to_content([
+                'lang_key' => get_string('pu_docs_invalidsnone', 'block_pu'),
+                'attributes' => array('class' => 'litem')
+            ]);
         }
+
         return $this->content;
     }
 

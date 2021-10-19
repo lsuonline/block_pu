@@ -175,11 +175,17 @@ class block_pu_helpers {
             LEFT JOIN mdl_block_pu_codemaps pcm ON pcm.code = pc.id
             WHERE pcm.id IS NULL
             AND pc.valid = 1
+            AND pc.used = 0
             ORDER BY RAND()
             LIMIT 1";
 
         // Grab a random valid unassigned record.
         $pcid = $DB->get_record_sql($randsql);
+
+        if (!isset($pcid->id)) {
+            $url = new moodle_url('/');
+            redirect($url, get_string('nomorecodes', 'block_pu'), null, \core\output\notification::NOTIFY_ERROR); 
+        }
 
         // Build the data object.
         $assigned = new \stdClass();

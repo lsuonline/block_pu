@@ -74,9 +74,11 @@ $string['pu_docs_requestedall'] = 'If you have used the top (latest) code, pleas
 $string['pu_docs_invalid'] = 'If the top (latest) code does not work, request a replacement code by clicking on the "<strong>request replacement</strong>" button below:';
 $string['pu_docs_invalidsused'] = 'You have received {$a->numused} replacement codes from the pool of {$a->numtotal} available for this course.';
 $string['pu_docs_invalidsfull'] = 'You have requested all of the available replacement codes available for this course.<br>If you need another code, please contact <a href="mailto:answers@online.lsu.edu">answers@online.lsu.edu</a>.';
+$string['pu_docs_invalidsnone'] = 'If there is a problem with your coupon code and need another, please contact <a href="mailto:answers@online.lsu.edu">answers@online.lsu.edu</a>.';
 $string['pu_used'] = 'Mark used';
 $string['pu_new'] = 'Request a ProctorU coupon code';
 $string['pu_past'] = 'Used code ';
+$string['import_pu'] = 'Import ProctorU data';
 
 // Interstitial strings.
 $string['pu_yousure'] = 'Are you sure you want to request a replacement ProctorU coupon code?';
@@ -92,3 +94,4 @@ $string['markinvalid'] = 'Successfully marked your latest coupon code as invalid
 $string['assigned'] = 'You have been assigned a new ProctorU coupon code.';
 $string['nothingtodo'] = 'There was nothing to do.';
 $string['override_complete'] = 'Successfully saved override values.';
+$string['nomorecodes'] = 'The ProctorU coupon code system is out of codes, please contact <a href="mailto:answers@online.lsu.edu">answers@online.lsu.edu</a>.';
