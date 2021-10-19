@@ -44,23 +44,58 @@ if ($ADMIN->fulltree) {
         )
     );
 
+    // Coupon code filename.
     $settings->add(
         new admin_setting_configtext(
             'block_pu_ccfile',
             get_string('pu_ccfile', 'block_pu'),
             get_string('pu_ccfile_help', 'block_pu'),
-            3 // Default.
+            null // Default.
         )
     );
 
+    // Guild mapping filename.
     $settings->add(
         new admin_setting_configtext(
             'block_pu_guildfile',
             get_string('pu_guildfile', 'block_pu'),
             get_string('pu_guildfile_help', 'block_pu'),
-            3 // Default.
+            null // Default.
         )
     );
+
+    // ProctorU coupon code admin.
+    $settings->add(
+        new admin_setting_configtext(
+            'block_pu_code_admin',
+            get_string('pu_code_admin', 'block_pu'),
+            get_string('pu_code_admin_help', 'block_pu'),
+            null // Default.
+        )
+    );
+
+    // ProctorU minimum number of codes before an email.
+    $settings->add(
+        new admin_setting_configtext(
+            'block_pu_mincodes',
+            get_string('pu_mincodes', 'block_pu'),
+            get_string('pu_mincodes_help', 'block_pu'),
+            50 // Default.
+        )
+    );
+
+    // Email profile fields.
+    if (block_pu_helpers::get_user_profile_field_array()) {
+        $settings->add(
+            new admin_setting_configselect(
+               'block_pu_profile_field',
+                get_string('pu_profilefield', 'block_pu'),
+                get_string('pu_profilefield_help', 'block_pu'),
+                'pu_idnumber',
+                block_pu_helpers::get_user_profile_field_array()
+            )
+        );
+    }
 }
 
 // Add the folder.

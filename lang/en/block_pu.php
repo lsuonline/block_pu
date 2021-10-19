@@ -60,6 +60,9 @@ $string['override_numinvalid'] = 'Number of replacement codes';
 $string['override_numinvalid_help'] = 'Override the default number of replacement codes for this course. By default this is capped at the number of exams in this course.';
 $string['defaultsnull_codes'] = 'The defualt for this course is {$a->numcodes}.';
 
+$string['pu_profilefield'] = 'Profile Field for import';
+$string['pu_profilefield_help'] = 'This is either the standard user IDNumber or whichever other additional profile field you choose.<br>This field is what we key on when importing data.';
+
 // Block strings.
 $string['pu_block_intro_one'] = 'Here is your first coupon code for <strong>{$a->coursename}</strong>';
 $string['pu_block_intro_multi'] = 'Here are your {$a->numassigned} coupon codes for <strong>{$a->coursename}</strong>';
@@ -79,6 +82,10 @@ $string['pu_used'] = 'Mark used';
 $string['pu_new'] = 'Request a ProctorU coupon code';
 $string['pu_past'] = 'Used code ';
 $string['import_pu'] = 'Import ProctorU data';
+$string['pu_mincodes'] = 'Minimum number of codes';
+$string['pu_mincodes_help'] = 'The minimum number of valid codes left in the system before an email is triggered.';
+$string['pu_code_admin'] = 'Main ProctorU Admin';
+$string['pu_code_admin_help'] = 'The Moodle username designated to be the main ProctorU coupon code administrator.';
 
 // Interstitial strings.
 $string['pu_yousure'] = 'Are you sure you want to request a replacement ProctorU coupon code?';
@@ -87,6 +94,7 @@ $string['pu_try_again'] = 'Retry latest code';
 
 // Error strings.
 $string['nopermissions'] = 'You do not have permission to modify coupon codes.';
+$string['no_override_permissions'] = 'You do not have permission to modify exam overrides.';
 $string['nopermission'] = 'You do not have permission to modify the requested coupon code.<br><br>Please contact an administrator if you believe you should be able to modify that specific code.';
 $string['markused'] = 'Successfully marked your latest coupon code as used and requested a new code.';
 $string['lastused'] = 'Successfully marked your final coupon code as used.';

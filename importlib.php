@@ -52,4 +52,15 @@ class pu {
         pu_import_helper::block_pu_codeimport();
         return true;
     }
+
+    /**
+     * Master function for cleaning up orphaned codes and mappings.
+     *
+     * @return boolean
+     */
+    public function run_import_unmap() {
+        // Do the nasty.
+        pu_import_helper::block_pu_code_unmap();
+        return true;
+    }
 }

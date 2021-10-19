@@ -37,7 +37,7 @@ class block_pu_helpers {
         // Check to see if the user is who they say they are.
         if (!isset($params['pcmid']) && $USER->id === $params['user_id']) {
             // Now check to see if the user (verified) is a guild user in the course in question.
-            if ($DB->get_record('block_pu_guildmaps', array('course' => $params['course_id'], 'user' => $USER->id))) {
+            if ($DB->get_record('block_pu_guildmaps', array('course' => $params['course_id'], 'user' => $USER->id, 'current' => 1))) {
                 return true;
             }
         } else if (isset($params['pcmid']) && $USER->id === $params['user_id']) {
@@ -457,5 +457,32 @@ class block_pu_helpers {
         }
 
         return $updated;
+    }
+
+    /**
+     * Returns the system's custom user profile fields as array
+     *
+     * @return @array [shortname => name]
+     */
+    public static function get_user_profile_field_array() {
+        global $DB;
+
+        // Set up the array.
+        $userprofilefields = [];
+
+        // Make sure we have any profile fields.
+        if ($profilefields = $DB->get_records('user_info_field')) {
+            // Set the idnumber as the 1st one.
+            $userprofilefields['pu_idnumber'] = get_string('idnumber');
+
+            // Loop through the profile fields.
+            foreach ($profilefields as $profilefield) {
+
+                // Keep building the array.
+                $userprofilefields[$profilefield->shortname] = $profilefield->name;
+            }
+        }
+        // Return the array of user profile fields.
+        return $userprofilefields;
     }
 }

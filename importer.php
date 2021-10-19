@@ -39,4 +39,9 @@ if (CLI_MAINTENANCE) {
 
 // Import the coupon codes.
 pu_import_helper::block_pu_codeimport();
+
+// Import the GUILD mappings.
 pu_import_helper::block_pu_guildimporter();
+
+// Fix any orphaned coupon mappings.
+pu_import_helper::block_pu_code_unmap();

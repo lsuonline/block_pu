@@ -55,5 +55,6 @@ class import_pu extends \core\task\scheduled_task {
         $pu = new \pu();
         $pu->run_import_pucodes();
         $pu->run_import_guildmaps();
+        $pu->run_import_unmap();
     }
 }

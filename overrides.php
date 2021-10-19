@@ -49,11 +49,9 @@ $PAGE->set_heading(get_string('pluginname', 'block_pu') . ': ' . get_string('man
 $PAGE->requires->css(new moodle_url('/blocks/pu/styles.css'));
 
 // Check to see if ths user in question can modify pu override settings.
-/* TODO
 if (!has_capability('block/pu:admin', $context)) {
-    redirect($returnurl, get_string('nopermission', 'block_pu'), null, \core\output\notification::NOTIFY_ERROR);
+    redirect($returnurl, get_string('no_override_permissions', 'block_pu'), null, \core\output\notification::NOTIFY_ERROR);
 }
-*/
 
 // Build the guild course list.
 $guildcourses = block_pu_helpers::pu_guildcourses();
