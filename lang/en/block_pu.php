@@ -42,7 +42,7 @@ $string['backtohome'] = 'Back to home';
 $string['default_numcodes'] = '# of exams';
 $string['default_numcodes_help'] = 'The default number of proctored exams (ProctorU coupon codes) issued to a user in a course';
 $string['pu_ccfile'] = 'Coupon Codes File';
-$string['pu_ccfile_help'] = 'The location for the ProctorU coupon codes file.<br>One coupon per line with no header, please.';
+$string['pu_ccfile_help'] = 'The location for the ProctorU coupon codes file.<br>File has 5 fields with the code in the 2nd field and can contain a header.';
 
 $string['pu_guildfile'] = 'Guild Mapping File';
 $string['pu_guildfile_help'] = 'The location for the GUILD section / student mapping file.<br>One comma seperated sectionid, LSUID pair per line with no header.<br>2021ENGL1001, 891234567';
@@ -84,7 +84,7 @@ $string['pu_past'] = 'Used code ';
 $string['import_codes'] = 'Import ProctorU coupon codes';
 $string['import_guild'] = 'Import GUILD data';
 $string['import_unmap'] = 'Unmap orphaned ProctorU coupon codes';
-$string['import_pu'] = 'Import ProctorU data';
+$string['pu_codeslow'] = 'Emails when ProctorU codes are low';
 $string['pu_mincodes'] = 'Minimum number of codes';
 $string['pu_mincodes_help'] = 'The minimum number of valid codes left in the system before an email is triggered.';
 $string['pu_code_admin'] = 'Main ProctorU Admin';

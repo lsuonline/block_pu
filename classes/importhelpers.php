@@ -484,14 +484,20 @@ class pu_import_helper {
         // Log the data.
         $emailalert = '';
         $emailalert .= "There are $codesleft codes left with a minimum of $mincodes specified. \n";
-        $emailalert .= "We have used $absv more codes than expected. \n\n";
-        $emailalert .= "Please add more codes as soon as possible. \n";
 
-        echo($emailalert . "\n");
-
+        // Check to see fi we need to request more codes.
         if ($threshold < 1) {
+
+            // Add some qualifiers if we need codes.
+            $emailalert .= "We have used $absv more codes than expected. \n\n";
+            $emailalert .= "Please add more codes as soon as possible. \n";
+
+            // Email the alert.
             self::email_ccalert($emailalert);
         }
+
+        // Log the alert.
+        echo($emailalert . "\n");
     }
 
     /**
@@ -515,6 +521,9 @@ class pu_import_helper {
 
         // Loop through the usernames and add each user object to the user array.
         foreach ($usernames as $username) {
+
+            // Make sure we have no spaces.
+            $username = trim($username);
 
             // Add the user object to the array.
             $users[] = $DB->get_record('user', array('username' => $username));

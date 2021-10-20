@@ -54,6 +54,6 @@ class pu_codeslow extends \core\task\scheduled_task {
         global $CFG;
         require_once($CFG->dirroot . '/blocks/pu/importlib.php');
         $pu = new \pu();
-        $pu->run_codeslow();
+        $pu->run_pu_codeslow();
     }
 }

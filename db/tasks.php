@@ -55,15 +55,14 @@ $tasks = array(
         'dayofweek' => '*',
         'month' => '*'
     ),
-/*
+
     array(
-        'classname' => 'block_pu\task\pu_codeslow.php',
+        'classname' => 'block_pu\task\pu_codeslow',
         'blocking' => 0,
-        'minute' => '/5',
+        'minute' => '*',
         'hour' => '*',
         'day' => '*',
         'dayofweek' => '*',
         'month' => '*'
     )
-*/
 );

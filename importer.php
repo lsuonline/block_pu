@@ -38,13 +38,13 @@ if (CLI_MAINTENANCE) {
 }
 
 // Import the coupon codes.
-// pu_import_helper::block_pu_codeimport();
+pu_import_helper::block_pu_codeimport();
 
 // Import the GUILD mappings.
-// pu_import_helper::block_pu_guildimporter();
+pu_import_helper::block_pu_guildimporter();
 
 // Fix any orphaned coupon mappings.
-// pu_import_helper::block_pu_code_unmap();
+pu_import_helper::block_pu_code_unmap();
 
 // Email out admins when coupon codes run low.
-   pu_import_helper::block_pu_codeslow();
+pu_import_helper::pu_codeslow();

@@ -40,7 +40,7 @@ if ($ADMIN->fulltree) {
             'block_pu_defaultcodes',
             get_string('default_numcodes', 'block_pu'),
             get_string('default_numcodes_help', 'block_pu'),
-            3 // Default.
+            2 // Default.
         )
     );
 

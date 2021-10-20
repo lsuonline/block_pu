@@ -43,6 +43,17 @@ class pu {
     }
 
     /**
+     * Master function for emailing minimum threshold exceptions.
+     *
+     * @return @book
+     */
+    public function run_pu_codeslow() {
+        // Do the nasty.
+        pu_import_helper::block_pu_codeslow();
+        return true;
+    }
+
+    /**
      * Master function for importing ProctorU coupon codes.
      *
      * @return boolean
