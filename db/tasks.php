@@ -27,12 +27,43 @@ defined('MOODLE_INTERNAL') || die();
 // Define the task defaults.
 $tasks = array(
     array(
-        'classname' => 'block_pu\task\import_pu',
+        'classname' => 'block_pu\task\import_codes',
         'blocking' => 0,
-        'minute' => '0',
-        'hour' => '0',
+        'minute' => '30',
+        'hour' => '*',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ),
+
+    array(
+        'classname' => 'block_pu\task\import_guild',
+        'blocking' => 0,
+        'minute' => '40',
+        'hour' => '3',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ),
+
+    array(
+        'classname' => 'block_pu\task\import_unmap',
+        'blocking' => 0,
+        'minute' => '50',
+        'hour' => '3',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ),
+/*
+    array(
+        'classname' => 'block_pu\task\pu_codeslow.php',
+        'blocking' => 0,
+        'minute' => '/5',
+        'hour' => '*',
         'day' => '*',
         'dayofweek' => '*',
         'month' => '*'
     )
+*/
 );

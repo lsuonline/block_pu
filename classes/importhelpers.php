@@ -101,7 +101,7 @@ class pu_import_helper {
     
             // Set the fields based on data from the line.
             $fields = array_map('trim', $line);
-    
+
             // If we have an empty bit, skip it.
             if (!empty($fields[0])) {
     
@@ -302,10 +302,16 @@ class pu_import_helper {
         $return = '';
         // Set this up for later.
         $data = array();
+
+        // Short circuit this if we find a header row.
+        if ($fields[1] == 'Code') {
+            echo("We found a header row and skipped it.\n");
+            return false;
+        }
     
         // Populate the data.
-        $data['couponcode'] = $fields[0];
-    
+        $data['couponcode'] = $fields[1];
+
         // What table do we want the data in.
         $table = 'block_pu_codes';
     
@@ -429,5 +435,100 @@ class pu_import_helper {
 
         // Return the block_pu_guildmaps row id even though we don't use it.
         return $return;
+    }
+
+    /**
+     * Gets the numnber of coupon codes left.
+     *
+     * @package   block_pu
+     * @return    @int
+     *
+     */
+    public static function pu_codesleft() {
+        global $DB;
+
+        // Set up the SQL.
+        $sql = 'SELECT COUNT(pc.id) AS codesleft
+                FROM mdl_block_pu_codes pc
+                  LEFT JOIN mdl_block_pu_codemaps pcm ON pcm.code = pc.id
+                WHERE pc.valid = 1
+                  AND pc.used = 0
+                  AND pcm.id IS NULL';
+
+        // Get the data object.
+        $codesleft = $DB->get_record_sql($sql);
+
+        // Return the relevant data.
+        return $codesleft->codesleft;
+    }
+
+    /**
+     * Emails admins when the number of coupon codes drops below
+     * a predetermined threshold.
+     *
+     * @package   block_pu
+     *
+     */
+    public static function block_pu_codeslow() {
+        global $CFG;
+
+        // Get the code count.
+        $codesleft = (int)self::pu_codesleft();
+
+        // Get the minimum number of codes allowed.
+        $mincodes = (int)$CFG->block_pu_mincodes;
+
+        $threshold = $codesleft - $mincodes;
+        $absv = abs($threshold);
+
+        // Log the data.
+        $emailalert = '';
+        $emailalert .= "There are $codesleft codes left with a minimum of $mincodes specified. \n";
+        $emailalert .= "We have used $absv more codes than expected. \n\n";
+        $emailalert .= "Please add more codes as soon as possible. \n";
+
+        echo($emailalert . "\n");
+
+        if ($threshold < 1) {
+            self::email_ccalert($emailalert);
+        }
+    }
+
+    /**
+     * Contructs and send the email using Moodle functionality.
+     *
+     * @package   block_pu
+     * @param     @string $emailalert.
+     *
+     */
+    public static function email_ccalert($emailalert) {
+        global $CFG, $DB;
+
+        // Get email content from email log.
+        $emailcontent = $emailalert;
+
+        // Grab the list of usernames from Moodle.
+        $usernames = explode(",", $CFG->block_pu_code_admin);
+
+        // Set up the users array.
+        $users = array();
+
+        // Loop through the usernames and add each user object to the user array.
+        foreach ($usernames as $username) {
+
+            // Add the user object to the array.
+            $users[] = $DB->get_record('user', array('username' => $username));
+        }
+
+        // Send an email to each of the above users.
+        foreach ($users as $user) {
+
+            // Email the message.
+            email_to_user($user,
+                "ProctorU Code Administrator",
+                sprintf('!!!Minumum # of codes exceeded for %s!!!',
+                $CFG->wwwroot),
+                $emailcontent);
+        }
     }
 }

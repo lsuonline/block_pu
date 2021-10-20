@@ -66,7 +66,7 @@ $string['pu_profilefield_help'] = 'This is either the standard user IDNumber or 
 // Block strings.
 $string['pu_block_intro_one'] = 'Here is your first coupon code for <strong>{$a->coursename}</strong>';
 $string['pu_block_intro_multi'] = 'Here are your {$a->numassigned} coupon codes for <strong>{$a->coursename}</strong>';
-$string['pu_docs_intro'] = 'What you need to know about PU codes:';
+$string['pu_docs_intro'] = 'What you need to know about coupon codes:';
 $string['pu_docs_intronone'] = 'You have been allocated {$a->numtotal} coupon codes for this course.
                                 <br>Please click the "Request a ProctorU coupon code" button to request your first coupon code for this course.';
 $string['pu_docs_allocatednum'] = 'You have <strong>requested</strong> {$a->numallocated} of the {$a->numtotal} coupon codes for this course.';
@@ -81,6 +81,9 @@ $string['pu_docs_invalidsnone'] = 'If there is a problem with your coupon code a
 $string['pu_used'] = 'Mark used';
 $string['pu_new'] = 'Request a ProctorU coupon code';
 $string['pu_past'] = 'Used code ';
+$string['import_codes'] = 'Import ProctorU coupon codes';
+$string['import_guild'] = 'Import GUILD data';
+$string['import_unmap'] = 'Unmap orphaned ProctorU coupon codes';
 $string['import_pu'] = 'Import ProctorU data';
 $string['pu_mincodes'] = 'Minimum number of codes';
 $string['pu_mincodes_help'] = 'The minimum number of valid codes left in the system before an email is triggered.';

@@ -15,16 +15,44 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * A scheduled task.
+ *
+ * The task for importing ProctorU coupon codes.
+ *
  * @package    block_pu
- * @copyright  2021 onwards LSU Online & Continuing Education
+ * @copyright  2021 onwards LSUOnline & Continuing Education
  * @copyright  2021 onwards Robert Russo
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace block_pu\task;
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'block_pu';
-$plugin->version = 2021102000;
-$plugin->requires = 2016052300;
-$plugin->release = "v1.0";
-$plugin->maturity = MATURITY_STABLE;
+/**
+ * Extend the Moodle scheduled task class with ours.
+ */
+class import_codes extends \core\task\scheduled_task {
+
+    /**
+     * Get a descriptive name for this task (shown to admins).
+     *
+     * @return string
+     */
+    public function get_name() {
+
+        return get_string('import_codes', 'block_pu');
+
+    }
+
+    /**
+     * Do the job.
+     *
+     * Throw exceptions on errors (the job will be retried).
+     */
+    public function execute() {
+
+        global $CFG;
+        require_once($CFG->dirroot . '/blocks/pu/importlib.php');
+        $pu = new \pu();
+        $pu->run_import_pucodes();
+    }
+}

@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Extend the Moodle scheduled task class with ours.
  */
-class import_pu extends \core\task\scheduled_task {
+class import_unmap extends \core\task\scheduled_task {
 
     /**
      * Get a descriptive name for this task (shown to admins).
@@ -39,7 +39,7 @@ class import_pu extends \core\task\scheduled_task {
      */
     public function get_name() {
 
-        return get_string('import_pu', 'block_pu');
+        return get_string('import_unmap', 'block_pu');
 
     }
 
@@ -53,8 +53,6 @@ class import_pu extends \core\task\scheduled_task {
         global $CFG;
         require_once($CFG->dirroot . '/blocks/pu/importlib.php');
         $pu = new \pu();
-        $pu->run_import_pucodes();
-        $pu->run_import_guildmaps();
         $pu->run_import_unmap();
     }
 }
