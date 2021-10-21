@@ -53,7 +53,7 @@ class block_pu extends block_list {
     /**
      * Returns the course object
      *
-     * @return object
+     * @return @object
      */
     public function set_course() {
         global $COURSE;
@@ -63,7 +63,7 @@ class block_pu extends block_list {
     /**
      * Returns the user object
      *
-     * @return object
+     * @return @object
      */
     public function set_user() {
         global $USER;
@@ -71,9 +71,9 @@ class block_pu extends block_list {
     }
 
     /**
-     * Returns this course's context
+     * Sets and returns this course's context
      *
-     * @return context
+     * @return @context
      */
     private function set_course_context() {
         $this->course_context = context_course::instance($this->course->id);
@@ -82,7 +82,7 @@ class block_pu extends block_list {
     /**
      * Indicates which pages types this block may be added to
      *
-     * @return array
+     * @return @array
      */
     public function applicable_formats() {
         return array(
@@ -94,7 +94,7 @@ class block_pu extends block_list {
     /**
      * Indicates that this block has its own configuration settings
      *
-     * @return bool
+     * @return @bool
      */
     public function has_config() {
         return true;
@@ -103,7 +103,7 @@ class block_pu extends block_list {
     /**
      * Sets the content to be rendered when displaying this block
      *
-     * @return object
+     * @return @object
      */
     public function get_content() {
         if (!empty($this->content)) {
@@ -113,18 +113,22 @@ class block_pu extends block_list {
         // Create a fresh content container.
         $this->content = $this->get_new_content_container();
 
+        // Hmm. Didn't I declare this earlier?
         $coursecontext = context_course::instance($this->course->id);
 
         // Course-level Features.
+        // If we have a count of 1.
         if ($this->pu_totalcount > 0 && $this->pu_totalcount < 2) {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_block_intro_one', 'block_pu', ['coursename' => $this->course->fullname])
             ]);
+        // If we have a count of more than 1.
         } else if ($this->pu_totalcount > 1) {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_block_intro_multi', 'block_pu', ['numassigned' => $this->pu_totalcount, 'coursename' => $this->course->fullname])
             ]);
         } else {
+            // We have no coupon codes requested.
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_new', 'block_pu'),
                 'page' => 'coder',
@@ -136,11 +140,10 @@ class block_pu extends block_list {
         $countpast = 0;
         $countcurrent = 0;
 
+        // Loop through the codes to find the assigned but unused code to display it on top.
         foreach ($this->mapped_codes() AS $mappedcode) {
             if ($mappedcode->valid == 1 && $mappedcode->used == 0 && $this->pu_usedcount < $this->pu_totalcount) {
-
                 $pcmidnew = $mappedcode->pcmid;
-
                 $countcurrent++;
                 $this->add_item_to_content([
                     'lang_key' => $mappedcode->couponcode,
@@ -150,6 +153,7 @@ class block_pu extends block_list {
             }
         }
 
+        // Loop through the used codes and display them in order.
         foreach ($this->mapped_codes() AS $mappedcode) {
             if ($mappedcode->valid == 1 && $mappedcode->used == 1) {
 
@@ -163,16 +167,19 @@ class block_pu extends block_list {
             }
         }
 
+        // Add some language.
         $this->add_item_to_content([
             'lang_key' => get_string('pu_docs_intro', 'block_pu'),
             'attributes' => array('class' => 'intro')
         ]);
 
+        // Depending on codecount and code status, display the correct stuff.
         if (isset($pcmidnew) && $this->pu_totalcount < $this->pu_codetotals && ($this->pu_usedcount > 0 || $this->pu_totalcount > 0)) {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_docs_used', 'block_pu'),
                 'attributes' => array('class' => 'litem')
             ]);
+
         } else if (isset($pcmidnew) && $this->pu_totalcount >= $this->pu_codetotals && ($this->pu_usedcount > 0 || $this->pu_totalcount > 0)) {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_docs_requestedall', 'block_pu'),
@@ -180,6 +187,7 @@ class block_pu extends block_list {
             ]);
         } 
 
+        // If we have a new code and more than zero but less than the limit of total codes, do stuff.
         if (isset($pcmidnew) && $this->pu_totalcount > 0 && $this->pu_totalcount <= $this->pu_codetotals) {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_used', 'block_pu'),
@@ -189,6 +197,7 @@ class block_pu extends block_list {
             ]);
         }
 
+        // If we DO NOT have a new code but still have more than 0 and less than the limit of total codes, do different stuff.
         if (!isset($pcmidnew) && $this->pu_totalcount > 0 && $this->pu_totalcount < $this->pu_codetotals) {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_new', 'block_pu'),
@@ -198,21 +207,27 @@ class block_pu extends block_list {
             ]);
         }
 
+        // If we have ONLY an unused code.
         if ($this->pu_totalcount > 0 && $this->pu_usedcount == 0) {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_docs_allocatednum', 'block_pu', ['numallocated' => $this->pu_totalcount, 'numtotal' => $this->pu_codetotals]),
                 'attributes' => array('class' => 'litem')
             ]);
+        // If we have used codes less than the total allowed.
         } else if ($this->pu_usedcount > 0 && $this->pu_usedcount < $this->pu_codetotals) {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_docs_usednum', 'block_pu', ['numused' => $this->pu_usedcount, 'numtotal' => $this->pu_codetotals]),
                 'attributes' => array('class' => 'litem')
             ]);
+
+        // If we have used codes EXACTLY equaling the total allowed.
         } else if ($this->pu_totalcount > 0 && $this->pu_usedcount >= $this->pu_codetotals) {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_docs_noneleft', 'block_pu'),
                 'attributes' => array('class' => 'litem')
             ]);
+
+        // We have something else.
         } else {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_docs_intronone', 'block_pu', ['numtotal' => $this->pu_codetotals]),
@@ -220,6 +235,7 @@ class block_pu extends block_list {
             ]);
         }
 
+        // We have a new code with an invalid count below the allowed invalids and the total code count is more than 0.
         if (isset($pcmidnew) && $this->pu_invalidcount < $this->pu_invalidtotals && $this->pu_totalcount > 0) {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_docs_invalid', 'block_pu'),
@@ -241,11 +257,14 @@ class block_pu extends block_list {
             }
         }
 
+        // We have used our invalid codes and have at least 1 invalid.
         if ($this->pu_invalidcount >= $this->pu_invalidtotals && $this->pu_invalidtotals > 0) {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_docs_invalidsfull', 'block_pu', ['numused' => $this->pu_invalidcount, 'numtotal' => $this->pu_invalidtotals]),
                 'attributes' => array('class' => 'litem')
             ]);
+
+        // We have a 0 invalid allowed situation.
         } else if ($this->pu_invalidcount >= $this->pu_invalidtotals) {
             $this->add_item_to_content([
                 'lang_key' => get_string('pu_docs_invalidsnone', 'block_pu'),
@@ -266,6 +285,7 @@ class block_pu extends block_list {
         block_pu_helpers::guilduser_check($params);
     }
 
+    // Get the code totals.
     private function codetotals($courseid) {
         $codetotals = block_pu_helpers::pu_codetotals($params = array('course_id' => $courseid));
 
@@ -276,17 +296,7 @@ class block_pu extends block_list {
     /**
      * Retreives the code mappings for a user/course from a helper function.
      *
-     * @return array of objects containing
-                      [ pcmid,
-                        coursefullname,
-                        userfirstname,
-                        userlastname,
-                        username,
-                        LSUID,
-                        useremail,
-                        couponcode,
-                        used,
-                        valid ]
+     * @return @array
      */
     private function mapped_codes() {
         // Set up the course id for later.
@@ -307,8 +317,8 @@ class block_pu extends block_list {
      *
      * Counts the number of coupon codes assigned to a person in a course context.
      *
-     * @param  array $params  [ uv ]
-     * @return int
+     * @param  @array $uv
+     * @return @int
      */
     private function usedcount($uv="used") {
         global $DB;
@@ -329,14 +339,14 @@ class block_pu extends block_list {
     /**
      * Builds and adds an item to the content container for the given params
      *
-     * @param  array $params  [lang_key, icon_key, page, query_string]
-     * @return void
+     * @param  @array $params
      */
     private function add_item_to_content($params) {
         if (!array_key_exists('query_string', $params)) {
             $params['query_string'] = [];
         }
 
+        // Build the item.
         $item = $this->build_item($params);
 
         if (block_pu_helpers::guilduser_check($params = array('course_id' => $this->course->id, 'user_id' => $this->user->id))) {
@@ -347,8 +357,8 @@ class block_pu extends block_list {
     /**
      * Builds a content item (link) for the given params
      *
-     * @param  array $params  [lang_key, icon_key, page, query_string]
-     * @return string
+     * @param  @array $params
+     * @return @string
      */
     private function build_item($params) {
         global $OUTPUT;
@@ -388,7 +398,7 @@ class block_pu extends block_list {
     /**
      * Returns an empty "block list" content container to be filled with content
      *
-     * @return object
+     * @return @object
      */
     private function get_new_content_container() {
         $content = new stdClass;
