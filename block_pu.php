@@ -173,6 +173,13 @@ class block_pu extends block_list {
             'attributes' => array('class' => 'intro')
         ]);
 
+
+        // Don't show the block if the course override is set to 0 codes (ignoring invalid count).
+        if ($this->pu_codetotals == 0) {
+            unset($this->content);
+            return "";
+        }
+
         // Depending on codecount and code status, display the correct stuff.
         if (isset($pcmidnew) && $this->pu_totalcount < $this->pu_codetotals && ($this->pu_usedcount > 0 || $this->pu_totalcount > 0)) {
             $this->add_item_to_content([
