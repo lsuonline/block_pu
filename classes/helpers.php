@@ -50,6 +50,94 @@ class block_pu_helpers {
     }
 
     /**
+     * Grabs a list of all invalid codes and whatever mappings they may have.
+     *
+     * @return @array
+     */
+    public static function get_invalids() {
+        global $DB;
+
+        $sql = 'SELECT pc.id AS pcid,
+                    pcm.id AS pcmid,
+                    pc.couponcode AS accesscode,
+                    COALESCE(c.shortname, "-") AS course,
+                    COALESCE(CONCAT(u.firstname, " ", u.lastname), "-") AS user,
+                    COALESCE(u.idnumber, "-") AS idnumber,
+                    COALESCE(u.email, "-") AS email
+                FROM {block_pu_codes} pc
+                    LEFT JOIN {block_pu_codemaps} pcm ON pc.id = pcm.code
+                    LEFT JOIN {block_pu_guildmaps} pgm ON pgm.id = pcm.guild
+                    LEFT JOIN {course} c ON c.id = pgm.course
+                    LEFT JOIN {user} u ON u.id = pgm.user
+                WHERE pc.valid = 0
+                ORDER BY pc.used DESC,
+                         pc.valid DESC,
+                         pcm.updatedate ASC,
+                         c.shortname ASC';
+
+        $invalids = $DB->get_records_sql($sql);
+
+        return $invalids;
+    }
+
+    /**
+     * Resets invalid codes to unused usable codes.
+     *
+     * @return @bool
+     */
+    public static function reset_invalid($pcid, $pcmid) {
+        global $CFG, $DB;
+
+        // Set the tables.
+        $pctable  = $CFG->prefix . "block_pu_codes";
+        $pcmtable = $CFG->prefix . "block_pu_codemaps";
+
+        // Build the SQL.
+        $sql = 'UPDATE ' . $pctable . ' pc
+                SET pc.used = 0, pc.valid = 1
+                WHERE pc.id = ' . $pcid;
+
+        // First delete the mapping.
+        if ((isset($pcid)) && isset($pcmid)) {
+            $DB->delete_records('block_pu_codemaps', array('id' => $pcmid));
+        }
+
+        // Now update the code.
+        if (isset($pcid)) {
+            $DB->execute($sql);
+        }
+    }
+
+    /**
+     * Marks a known invalid code to make it now show.
+     *
+     * @return @bool
+     */
+    public static function known_invalid($pcid) {
+        global $CFG, $DB;
+
+        // Set the table.
+        $pctable  = $CFG->prefix . "block_pu_codes";
+
+        // Build the SQL.
+        $sql = 'UPDATE ' . $pctable . ' pc
+                SET pc.used = 0, pc.valid = 2
+                WHERE pc.id = ' . $pcid;
+
+        // Set this for future use.
+        $return = false;
+
+        // Update the code.
+        if (isset($pcid)) {
+            // Both execute the query and set the return status.
+            $return = $DB->execute($sql);
+        }
+
+        // Return the status.
+        return $return;
+    }
+
+    /**
      * Retreives the code mappings for a user/course and a given coupon code mapping.
      *
      * @return array of objects containing

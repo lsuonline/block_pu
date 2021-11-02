@@ -48,6 +48,7 @@ $string['pu_guildfile'] = 'Guild Mapping File';
 $string['pu_guildfile_help'] = 'The location for the GUILD section / student mapping file.<br>One comma seperated sectionid, LSUID pair per line with no header.<br>2021ENGL1001, 891234567';
 
 // Configuration.
+$string['manage_invalids'] = 'Manage invalid codes';
 $string['manage_overrides'] = 'Manage overrides';
 $string['manage_overrides_help'] = 'Manage the number of proctored exams and replacement ProctorU access codes at the course shell level.
                                     <strong>This setting, if overridden, will be the final determining factor for how many exams (access codes) 
