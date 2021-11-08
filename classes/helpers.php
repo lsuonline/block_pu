@@ -54,8 +54,10 @@ class block_pu_helpers {
      *
      * @return @array
      */
-    public static function get_invalids() {
+    public static function get_invalids($perms='any') {
         global $DB;
+
+        $wheres = $perms == 'any' ? 'pc.valid IN (0,2)' : 'pc.valid = 0';
 
         $sql = 'SELECT pc.id AS pcid,
                     pcm.id AS pcmid,
@@ -69,8 +71,9 @@ class block_pu_helpers {
                     LEFT JOIN {block_pu_guildmaps} pgm ON pgm.id = pcm.guild
                     LEFT JOIN {course} c ON c.id = pgm.course
                     LEFT JOIN {user} u ON u.id = pgm.user
-                WHERE pc.valid = 0
-                ORDER BY pc.used DESC,
+                WHERE ' . $wheres . '
+                ORDER BY u.lastname DESC,
+                         pc.used DESC,
                          pc.valid DESC,
                          pcm.updatedate ASC,
                          c.shortname ASC';
@@ -102,14 +105,14 @@ class block_pu_helpers {
             $DB->delete_records('block_pu_codemaps', array('id' => $pcmid));
         }
 
-        // Now update the code.
+        // Now update the coupon code.
         if (isset($pcid)) {
             $DB->execute($sql);
         }
     }
 
     /**
-     * Marks a known invalid code to make it now show.
+     * Marks a known invalid code to make it not show.
      *
      * @return @bool
      */
@@ -305,7 +308,7 @@ class block_pu_helpers {
         if ($uv == "used") {
             $uvands = "AND pc.used = 1 AND pc.valid = 1";
         } else if ($uv == "invalid") {
-            $uvands = "AND pc.valid = 0";
+            $uvands = "AND pc.valid IN (0,2)";
         } else {
             $uvands = "AND pc.valid = 1";
         }
@@ -450,6 +453,44 @@ class block_pu_helpers {
 
        return true;
     }
+
+
+    /**
+     * @return array
+     */
+    public static function pu_writevalidates($fromform, $userid) {
+        global $DB;
+
+        // Loop through the key value pair data sent by the form.
+        foreach ($fromform as $key => $value) {
+
+           // Build the types for use in the future.
+           $types = explode("_", $key);
+
+           // If we have not set data, set the value to 0 (invalid, but shows in the UI).
+           $command = $value == '' ? 0 : (int)$value;
+
+           // If we have set the pcid, and pcmid, do stuff.
+           if (isset($types[0]) && isset($types[2])) {
+
+               // Set the ProctorU code id.
+               $pcid  = $types[1];
+
+               // Set the ProctorU mapping id.
+               $pcmid  = $types[3];
+
+               if ($command == 1) {
+                   $invalidate = self::reset_invalid($pcid, $pcmid);
+               } else if ($command == 2) {
+                   $invalidate = self::known_invalid($pcid);
+               }
+           }
+       }
+
+       return true;
+    }
+
+
 
     public static function pu_updaterecords($command, $courseid, $intvalue=null) {
         // First we check to make sure we're working with a set value.

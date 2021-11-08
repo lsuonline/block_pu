@@ -28,7 +28,7 @@ require_once('../../config.php');
 global $CFG, $USER;
 
 // Inlcude the requisite helpers functionality.
-// require_once($CFG->dirroot . '/blocks/pu/overrides_form.php');
+require_once($CFG->dirroot . '/blocks/pu/validate_form.php');
 require_once($CFG->dirroot . '/blocks/pu/classes/helpers.php');
 
 // Make sure the user is logged in.
@@ -54,8 +54,36 @@ if (!has_capability('block/pu:admin', $context)) {
     redirect($returnurl, get_string('nopermissions', 'block_pu'), null, \core\output\notification::NOTIFY_ERROR);
 }
 
-$invalids = block_pu_helpers::get_invalids();
+// Get the list of invalids.
+$invalids = block_pu_helpers::get_invalids($perms = 'noperms');
 
- // block_pu_helpers::reset_invalid($invalid->pcid, $invalid->pcmid);
+// Build the form.
+$form = new pu_validates_form(null, $invalids, $PAGE);
 
+// Set default data (if any).
+$form->set_data($invalids);
+
+// Form processing and displaying.
+if ($form->is_cancelled()) {
+    // Handle form cancel operation, if cancel button is present on form.
+    redirect($returnurl, get_string('nothingtodo', 'block_pu'), null, \core\output\notification::NOTIFY_WARNING);
+
+} else if ($fromform = $form->get_data()) {
+
+    //In this case you process validated data. $mform->get_data() returns data posted in form.
+    $orcomplete = block_pu_helpers::pu_writevalidates($fromform, $userid = $USER->id);
+
+    if ($orcomplete) {
+        redirect($returnurl, get_string('validate_complete', 'block_pu'), 10, \core\output\notification::NOTIFY_SUCCESS);
+    } else {
+        $form->display();
+    }
+} else {
+    // Output the page header.
+    echo $OUTPUT->header();
+
+    // Display the form.
+    $form->display();
 }
+
+echo $OUTPUT->footer();
