@@ -330,6 +330,40 @@ class block_pu_helpers {
     }
 
     /**
+     * Returns the ProctorU code map object, if there is one.
+     *
+     * @return @object
+     */
+    public static function pu_pcmexists($params) {
+        // Needed to invoke the DB.
+        global $DB;
+
+        // Set up these for later.
+        $cid   = $params['course_id'];
+        $uid   = $params['user_id'];
+        $pcm   = $params['pcm_id'];
+
+        $pesql = "SELECT 1 as tf
+                  FROM {block_pu_codemaps} pcm
+                      INNER JOIN {block_pu_guildmaps} pgm ON pgm.id = pcm.guild
+                      INNER JOIN {block_pu_codes} pc ON pc.id = pcm.code
+                  WHERE pc.valid = 1
+                      AND pc.used = 0
+                      AND pcm.id = $pcm
+                      AND pgm.user = $uid
+                      AND pgm.course = $cid";
+
+        // Grab a random valid unassigned record.
+        $data = $DB->get_record_sql($pesql);
+
+        // Set up the boolean for return.
+        $tf = isset($data->tf) == 1 ? true: false;
+
+        // Return true or false.
+        return $tf;
+    }
+
+    /**
      * Returns the number of codes and replacements allowed.
      *
      * @param array $params [ courseid ]

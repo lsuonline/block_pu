@@ -33,12 +33,13 @@ class block_pu extends block_list {
     public $coursecontext;
 
     public function init() {
-        global $CFG;
+        global $CFG, $PAGE;
 
         $this->title = get_string('pluginname', 'block_pu');
         $this->set_course();
         $this->set_user();
         $this->set_course_context();
+        $PAGE->requires->js(new moodle_url('/blocks/pu/js.js'));
 
         // Set these up for sanity's sake.
         if (isset($CFG->block_pu_defaultcodes)) {
