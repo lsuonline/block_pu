@@ -25,7 +25,8 @@ defined('MOODLE_INTERNAL') || die();
 
 // Block.
 $string['pluginname'] = 'ProctorU Access Codes';
-$string['foldername'] = 'ProctorU Access Codes';
+$string['foldername'] = 'Manage ProctorU';
+$string['adminname'] = 'Manage ProctorU Codes';
 
 // Tasks.
 
@@ -48,7 +49,7 @@ $string['pu_guildfile'] = 'Guild Mapping File';
 $string['pu_guildfile_help'] = 'The location for the GUILD section / student mapping file.<br>One comma seperated sectionid, LSUID pair per line with no header.<br>2021ENGL1001, 891234567';
 
 // Configuration.
-$string['manage_invalids'] = 'Manage invalid codes';
+$string['manage_invalids'] = 'Invalid codes';
 $string['manage_invalids_help'] = 'Manage whether invalid access codes are confirmed by ProctorU to either be "unused and valid" or "used or invalid" access codes.';
 $string['manage_overrides'] = 'Manage overrides';
 $string['manage_overrides_help'] = 'Manage the number of proctored exams and replacement ProctorU access codes at the course shell level.

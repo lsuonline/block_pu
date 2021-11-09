@@ -37,7 +37,9 @@ require_login();
 // Set the context.
 $context = \context_system::instance();
 
+// Set the redirect url.
 $returnurl = new moodle_url('/');
+$pageurl = $CFG->wwwroot . '/blocks/pu/validate.php';
 
 // Set up the page.
 $PAGE->set_url('/blocks/pu/validate.php');
@@ -74,7 +76,7 @@ if ($form->is_cancelled()) {
     $orcomplete = block_pu_helpers::pu_writevalidates($fromform, $userid = $USER->id);
 
     if ($orcomplete) {
-        redirect($returnurl, get_string('validate_complete', 'block_pu'), 10, \core\output\notification::NOTIFY_SUCCESS);
+        redirect($pageurl, get_string('validate_complete', 'block_pu'), 10, \core\output\notification::NOTIFY_SUCCESS);
     } else {
         $form->display();
     }
