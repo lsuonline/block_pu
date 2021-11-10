@@ -134,7 +134,7 @@ class block_pu extends block_list {
                 'lang_key' => get_string('pu_new', 'block_pu'),
                 'page' => 'coder',
                 'query_string' => ['courseid' => $this->course->id, 'pcmid' => 0, 'function' => 'new'],
-                'attributes' => array('class' => 'btn btn-outline-secondary btn-sm pu_new')
+                'attributes' => array('onclick' => 'processClick();', 'id' => 'nodbl', 'class' => 'btn btn-outline-secondary btn-sm pu_new')
             ]);
         }
 
@@ -209,7 +209,7 @@ class block_pu extends block_list {
                 'lang_key' => get_string('pu_used', 'block_pu'),
                 'page' => 'coder',
                 'query_string' => ['courseid' => $this->course->id, 'pcmid' => $pcmidnew, 'function' => 'used'],
-                'attributes' => array('class' => 'btn btn-outline-secondary btn-sm pu_used')
+                'attributes' => array('onclick' => 'processClick()', 'id' => 'nodbl', 'class' => 'btn btn-outline-secondary btn-sm pu_used')
             ]);
         }
 
@@ -219,7 +219,7 @@ class block_pu extends block_list {
                 'lang_key' => get_string('pu_new', 'block_pu'),
                 'page' => 'coder',
                 'query_string' => ['courseid' => $this->course->id, 'pcmid' => 0, 'function' => 'new'],
-                'attributes' => array('class' => 'btn btn-outline-secondary btn-sm pu_new')
+                'attributes' => array('onclick' => 'processClick();', 'id' => 'nodbl', 'class' => 'btn btn-outline-secondary btn-sm pu_new')
             ]);
         }
 

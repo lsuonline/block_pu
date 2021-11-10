@@ -1,6 +1,13 @@
-document.addEventListener('dblclick', function(event) {
-    alert("Double-click disabled!");
-    event.preventDefault();
-    event.stopPropagation();
-  }, true //capturing phase!!
-);
+var sclicked = false;
+
+document.getElementById("nodbl").addEventListener("click", function(event) {
+});
+
+function processClick() {
+    if (sclicked == false) {
+        sclicked = true;
+    } else if (sclicked == true) {
+        event.preventDefault()
+    }
+}
+
