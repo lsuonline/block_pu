@@ -419,7 +419,7 @@ class pu_import_helper {
 
             $usersql = 'SELECT u.id AS userid
                         FROM mdl_user u
-                        WHERE u.idnumber = ' . $d['useridnumber'];
+                        WHERE u.idnumber = "' . $d['useridnumber'] . '"';
 
         } else {
             $field = $DB->get_record('user_info_field', array('shortname' => $CFG->block_pu_profile_field));
@@ -479,8 +479,8 @@ class pu_import_helper {
         // Check to see if the course / user pair exists in the table.
         $exists = $DB->get_record($table, $data);
 
-        // If they do not exist.
-        if (!$exists) {
+        // If the record does not exist but the user and course do.
+        if (!$exists && isset($user->userid) && isset($course->id)) {
             // Insert the data and return the id of the newly inserted row.
             $return = $DB->insert_record($table, $data, $returnid = true, $bulk = false);
     
@@ -493,8 +493,8 @@ class pu_import_helper {
                 $return .
                 ".\n");
 
-        // If they do exist.
-        } else {
+        // If the record does exist.
+        } else if ($exists) {
             // They exist but will not be current. Here, we make sure they are.
             $data['id'] = $exists->id;
             $data['current'] = 1;
