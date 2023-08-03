@@ -64,6 +64,16 @@ if ($ADMIN->fulltree) {
         )
     );
 
+    // ProctorU minimum number of lines in a GUILD file.
+    $settings->add(
+        new admin_setting_configtext(
+            'block_pu_minlines',
+            get_string('pu_minlines', 'block_pu'),
+            get_string('pu_minlines_help', 'block_pu'),
+            50 // Default.
+        )
+    );
+
     // Guild mapping sectionmap for UES.
     $settings->add(
         new admin_setting_configcheckbox(
