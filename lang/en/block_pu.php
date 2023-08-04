@@ -71,6 +71,7 @@ $string['pu_profilefield_help'] = 'This is either the standard user IDNumber or 
 // File Uploader
 $string['manage_uploader'] = 'File Uploader';
 $string['manage_viewer'] = 'File Viewer';
+$string['pu_uploadstring'] = 'Upload a File';
 $string['no_upload_permissions'] = 'You do not have permission to upload codes.';
 $string['pu_file_link'] = 'File Link';
 $string['pu_filename'] = 'File Name';
