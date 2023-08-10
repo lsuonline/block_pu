@@ -29,33 +29,10 @@
     <thead>
         <tr>
             {{! -------------------- }}
-            {{#pu_filename}}
-                {{#isSortedAsc}}
-                    <th><a href="?sort=subject&dir=desc">{{# str }} pu_filename, block_pu {{/ str }}</a> {{#pix}} t/sort_asc {{/pix}}</th>
-                {{/isSortedAsc}}
-
-                {{^isSortedAsc}}
-                    <th><a href="?sort=subject&dir=asc">{{# str }} pu_filename, block_pu {{/ str }}</a> {{#pix}} t/sort_desc {{/pix}}</th>
-                {{/isSortedAsc}}
-            {{/pu_filename}}
-            {{^pu_filename}}
-                <th><a href="?sort=subject&dir=asc">{{# str }} pu_filename, block_pu {{/ str }}</a></th>
-            {{/pu_filename}}
+            <th>{{# str }} pu_filename, block_pu {{/ str }}</th>
             {{! -------------------- }}
-            {{#pu_created}}
-                {{#isSortedAsc}}
-                    <th><a href="?sort=sent&dir=desc">{{# str }} pu_filecreated, block_pu {{/ str }}</a> {{#pix}} t/sort_asc {{/pix}}</th>
-                {{/isSortedAsc}}
-
-                {{^isSortedAsc}}
-                    <th><a href="?sort=sent&dir=asc">{{# str }} pu_filecreated, block_pu {{/ str }}</a> {{#pix}} t/sort_desc {{/pix}}</th>
-                {{/isSortedAsc}}
-            {{/pu_created}}
-            {{^pu_created}}
-                <th><a href="?sort=sent&dir=asc">{{# str }} pu_filecreated, block_pu {{/ str }}</a></th>
-            {{/pu_created}}
+            <th>{{# str }} pu_filecreated, block_pu {{/ str }}</th>
             {{! -------------------- }}
-            {{! <th>{{# str } } pu_copy, block_pu {{/ str } }</th> }}
             <th>{{# str }} pu_delete, block_pu {{/ str }}</th>
             
         </tr>

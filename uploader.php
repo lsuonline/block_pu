@@ -76,8 +76,6 @@ $PAGE->set_title(format_string($uploadfile->name));
 $PAGE->navbar->add(get_string('pu_settings', 'block_pu'), new moodle_url($CFG->wwwroot. "/admin/settings.php?section=blocksettingpu"));
 $PAGE->set_heading(get_string('pu_uploadstring','block_pu'));
 
-// Set the contect.
-$context = context_system::instance();
 // $event = \block_pu\event\course_module_viewed::create(array(
 //             'objectid' => $PAGE->cm->instance,
 //             'context' => $PAGE->context,

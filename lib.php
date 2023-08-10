@@ -60,12 +60,10 @@ class pu_helpers {
         $uploadedfiles = $DB->get_records('block_pu_file');
         $tabledata = array();
         foreach ($uploadedfiles as $ufile) {
-
             $temp = array(
                 "puid" => $ufile->id,
                 "fileid" => $ufile->fileid,
                 "itemid" => $ufile->itemid,
-                "pu_fileurl" => "fix me",
                 "pu_filename" => $ufile->filename,
                 "pu_filecreated" => userdate($ufile->timecreated),
                 "pu_filemodified" => userdate($ufile->timemodified)

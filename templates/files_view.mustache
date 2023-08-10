@@ -29,58 +29,15 @@
         <caption>Files in Moodle</caption>
         <thead>
             <tr>
-                {{#fileURL}}
-                    {{#isSortedAsc}}
-                        <th><a href="?sort=url&dir=desc">{{# str }} pu_file_link, block_pu {{/ str }}</a> {{#pix}} t/sort_asc {{/pix}}</th>
-                    {{/isSortedAsc}}
-                    {{^isSortedAsc}}
-                        <th><a href="?sort=url&dir=asc">{{# str }} pu_file_link, block_pu {{/ str }}</a> {{#pix}} t/sort_desc {{/pix}}</th>
-                    {{/isSortedAsc}}
-                {{/fileURL}}
-                {{^fileURL}}
-                    <th><a href="?sort=url&dir=asc">{{# str }} pu_file_link, block_pu {{/ str }}</a></th>
-                {{/fileURL}}
                 {{! -------------------- }}
-                {{#pu_filename}}
-                    {{#isSortedAsc}}
-                        <th><a href="?sort=subject&dir=desc">{{# str }} pu_filename, block_pu {{/ str }}</a> {{#pix}} t/sort_asc {{/pix}}</th>
-                    {{/isSortedAsc}}
-
-                    {{^isSortedAsc}}
-                        <th><a href="?sort=subject&dir=asc">{{# str }} pu_filename, block_pu {{/ str }}</a> {{#pix}} t/sort_desc {{/pix}}</th>
-                    {{/isSortedAsc}}
-                {{/pu_filename}}
-                {{^pu_filename}}
-                    <th><a href="?sort=subject&dir=asc">{{# str }} pu_filename, block_pu {{/ str }}</a></th>
-                {{/pu_filename}}
+                <th>{{# str }} pu_filename, block_pu {{/ str }}</th>
                 {{! -------------------- }}
-                {{#pu_created}}
-                    {{#isSortedAsc}}
-                        <th><a href="?sort=sent&dir=desc">{{# str }} pu_filecreated, block_pu {{/ str }}</a> {{#pix}} t/sort_asc {{/pix}}</th>
-                    {{/isSortedAsc}}
-
-                    {{^isSortedAsc}}
-                        <th><a href="?sort=sent&dir=asc">{{# str }} pu_filecreated, block_pu {{/ str }}</a> {{#pix}} t/sort_desc {{/pix}}</th>
-                    {{/isSortedAsc}}
-                {{/pu_created}}
-                {{^pu_created}}
-                    <th><a href="?sort=sent&dir=asc">{{# str }} pu_filecreated, block_pu {{/ str }}</a></th>
-                {{/pu_created}}
+                <th>{{# str }} pu_filecreated, block_pu {{/ str }}</th>
                 {{! -------------------- }}
-                {{#pu_modified}}
-                    {{#isSortedAsc}}
-                        <th><a href="?sort=subject&dir=desc">{{# str }} pu_filemodified, block_pu {{/ str }}</a> {{#pix}} t/sort_asc {{/pix}}</th>
-                    {{/isSortedAsc}}
-
-                    {{^isSortedAsc}}
-                        <th><a href="?sort=subject&dir=asc">{{# str }} pu_filemodified, block_pu {{/ str }}</a> {{#pix}} t/sort_desc {{/pix}}</th>
-                    {{/isSortedAsc}}
-                {{/pu_modified}}
-                {{^pu_modified}}
-                    <th><a href="?sort=subject&dir=asc">{{# str }} pu_filemodified, block_pu {{/ str }}</a></th>
-                {{/pu_modified}}
+                <th>{{# str }} pu_filemodified, block_pu {{/ str }}</th>
                 {{! -------------------- }}
                 <th>{{# str }} pu_copy, block_pu {{/ str }}</th>
+                {{! -------------------- }}
                 <th>{{# str }} pu_delete, block_pu {{/ str }}</th>
 
             </tr>
@@ -93,7 +50,6 @@
                     <input type="hidden" value="{{fileid}}" name="mdl_file_id"/>
                     <input type="hidden" value="pu" name="pu_or_nonmood"/>
 
-                    <td>{{pu_fileurl}}</td>
                     <td>{{pu_filename}}</td>
                     <td>{{pu_filecreated}}</td>
                     <td>{{pu_filemodified}}</td>
